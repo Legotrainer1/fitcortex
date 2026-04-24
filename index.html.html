@@ -1,0 +1,2016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitCortex — by Joe Lego Performance</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0A0A0C;--bg2:#111114;--bg3:#18181C;--bg4:#1E1E24;
+  --surface:#1A1A1F;--surface2:#222228;--surface3:#2A2A32;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --teal:#00C7B4;--teal-dim:rgba(0,199,180,0.12);--teal-glow:rgba(0,199,180,0.25);
+  --orange:#FF6B35;--orange-dim:rgba(255,107,53,0.12);--orange-glow:rgba(255,107,53,0.25);
+  --white:#F5F5F7;--muted:rgba(255,255,255,0.38);--subtle:rgba(255,255,255,0.18);
+  --danger:#FF4444;--danger-dim:rgba(255,68,68,0.12);
+  --font-head:'SF Pro Display',-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;
+  --font-body:'SF Pro Text',-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;
+}
+body{font-family:var(--font-body);background:var(--bg);color:var(--white);min-height:100vh;overflow-x:hidden;}
+.view{display:none;min-height:100vh;}.view.active{display:block;}
+/* === TYPOGRAPHY === */
+h1,h2,h3{font-family:var(--font-head);letter-spacing:-0.02em;}
+
+/* === SHARED COMPONENTS === */
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;}
+.pill-teal{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(0,199,180,0.2);}
+.pill-orange{background:var(--orange-dim);color:var(--orange);border:1px solid rgba(255,107,53,0.2);}
+.pill-red{background:var(--danger-dim);color:var(--danger);border:1px solid rgba(255,68,68,0.2);}
+.pill-muted{background:rgba(255,255,255,0.05);color:var(--muted);border:1px solid var(--border);}
+
+.btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 28px;background:var(--teal);color:#0A0A0C;font-family:var(--font-body);font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;border:none;border-radius:8px;cursor:pointer;transition:all 0.15s;width:100%;}
+.btn-primary:hover{background:#00E5D0;transform:translateY(-1px);box-shadow:0 8px 24px var(--teal-glow);}
+.btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 28px;background:var(--surface2);color:var(--white);font-family:var(--font-body);font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;border:1px solid var(--border2);border-radius:8px;cursor:pointer;transition:all 0.15s;width:100%;}
+.btn-secondary:hover{background:var(--surface3);border-color:var(--border2);}
+.btn-ghost{padding:8px 16px;background:none;color:var(--muted);font-family:var(--font-body);font-size:11px;font-weight:600;border:1px solid var(--border);border-radius:20px;cursor:pointer;transition:all 0.15s;}
+.btn-ghost:hover{color:var(--white);border-color:var(--border2);}
+.btn-danger{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 28px;background:var(--danger-dim);color:var(--danger);font-family:var(--font-body);font-size:12px;font-weight:700;border:1px solid rgba(255,68,68,0.2);border-radius:8px;cursor:pointer;transition:all 0.15s;width:100%;}
+
+input[type=text],input[type=number],input[type=password],textarea,select{
+  width:100%;padding:12px 14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;
+  font-family:var(--font-body);font-size:13px;color:var(--white);outline:none;-webkit-appearance:none;transition:border-color 0.15s;
+}
+input:focus,textarea:focus,select:focus{border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-dim);}
+textarea{resize:vertical;min-height:72px;line-height:1.6;}
+select option{background:var(--bg3);}
+
+.divider{display:flex;align-items:center;gap:14px;margin:20px 0;}
+.divider .dl{flex:1;height:1px;background:var(--border);}
+.divider .dt{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
+
+/* === TOP BAR === */
+.top-bar{display:flex;justify-content:space-between;align-items:center;padding:20px 32px;border-bottom:1px solid var(--border);}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-mark{width:32px;height:32px;background:linear-gradient(135deg,var(--teal),var(--orange));border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.brand-mark svg{width:18px;height:18px;}
+.brand-name{font-family:var(--font-head);font-size:15px;font-weight:700;color:var(--white);letter-spacing:-0.02em;}
+.brand-name em{font-style:normal;color:var(--muted);font-weight:400;font-size:13px;margin-left:6px;}
+
+/* === WELCOME === */
+#v-welcome{background:var(--bg);position:relative;overflow:hidden;}
+.welcome-noise{position:fixed;top:0;left:0;right:0;bottom:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0;}
+.welcome-glow-teal{position:fixed;top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(0,199,180,0.08) 0%,transparent 70%);pointer-events:none;z-index:0;}
+.welcome-glow-orange{position:fixed;bottom:-200px;left:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(255,107,53,0.06) 0%,transparent 70%);pointer-events:none;z-index:0;}
+.welcome-content{position:relative;z-index:1;max-width:520px;margin:0 auto;padding:0 32px;min-height:100vh;display:flex;flex-direction:column;}
+.welcome-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 0;}
+.w-eyebrow{font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--teal);margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+.w-eyebrow::before,.w-eyebrow::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--teal-dim));}
+.w-eyebrow::after{background:linear-gradient(270deg,transparent,var(--teal-dim));}
+.w-title{font-size:clamp(36px,7vw,72px);font-weight:800;line-height:1.0;margin-bottom:6px;letter-spacing:-0.04em;}
+.w-title .line1{color:var(--white);}
+.w-title .line2{background:linear-gradient(135deg,var(--teal),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.w-sub{font-size:14px;color:var(--muted);max-width:380px;line-height:1.75;margin:18px auto 36px;font-weight:400;}
+.w-actions{display:flex;flex-direction:column;gap:10px;width:100%;margin-bottom:48px;}
+.w-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.ws-item{background:var(--surface);padding:18px;text-align:center;}
+.ws-num{font-size:26px;font-weight:800;letter-spacing:-0.03em;display:block;font-family:var(--font-head);}
+.ws-num.teal{color:var(--teal);}
+.ws-num.orange{color:var(--orange);}
+.ws-label{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);display:block;margin-top:2px;}
+
+/* === PROFILES === */
+#v-profiles{background:var(--bg);}
+.page-body{max-width:520px;margin:0 auto;padding:40px 32px 80px;}
+.page-head{margin-bottom:32px;}
+.page-head h2{font-size:28px;font-weight:800;margin-bottom:6px;letter-spacing:-0.02em;}
+.page-head p{font-size:13px;color:var(--muted);line-height:1.65;}
+.profile-list{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
+.profile-item{display:flex;align-items:center;gap:14px;padding:16px 18px;background:var(--surface);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all 0.15s;}
+.profile-item:hover{background:var(--surface2);border-color:var(--border2);transform:translateX(2px);}
+.pi-avatar{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#0A0A0C;flex-shrink:0;}
+.pi-name{font-size:14px;font-weight:700;color:var(--white);margin-bottom:2px;}
+.pi-track{font-size:11px;color:var(--muted);}
+.pi-meta{font-size:10px;color:var(--subtle);margin-top:1px;}
+.pi-arrow{color:var(--muted);margin-left:auto;font-size:16px;}
+
+/* === QUESTIONNAIRE === */
+#v-questionnaire{background:var(--bg);}
+.q-header{background:var(--bg);border-bottom:1px solid var(--border);padding:0 32px;}
+.q-header-inner{max-width:560px;margin:0 auto;padding:16px 0;}
+.q-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.q-label{font-size:11px;font-weight:600;color:var(--muted);}
+.q-step{font-size:10px;color:var(--muted);}
+.q-prog-bar{height:2px;background:var(--surface3);border-radius:2px;overflow:hidden;}
+.q-prog-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--orange));border-radius:2px;transition:width 0.5s ease;}
+.q-section-name{font-size:9px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--teal);margin-top:10px;}
+.q-body{max-width:560px;margin:0 auto;padding:32px 32px 80px;}
+.q-sec{display:none;}.q-sec.vis{display:block;}
+.q-sec-head{margin-bottom:28px;}
+.q-sec-head h2{font-size:24px;font-weight:800;margin-bottom:7px;letter-spacing:-0.02em;}
+.q-sec-head p{font-size:13px;color:var(--muted);line-height:1.65;}
+.q-block{margin-bottom:22px;}
+.q-label-text{display:block;font-size:12px;font-weight:600;color:var(--white);margin-bottom:8px;}
+.q-hint{font-size:11px;color:var(--muted);margin-bottom:8px;}
+.input-2col{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.choices{display:flex;flex-direction:column;gap:6px;}
+.choice{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;cursor:pointer;user-select:none;transition:all 0.13s;}
+.choice:hover{border-color:var(--border2);background:var(--surface2);}
+.choice.sel{border-color:var(--teal);background:var(--teal-dim);}
+.cdot{width:16px;height:16px;flex-shrink:0;border:2px solid var(--border2);border-radius:50%;position:relative;transition:all 0.13s;}
+.choice.sel .cdot{border-color:var(--teal);background:var(--teal);}
+.choice.sel .cdot::after{content:'';position:absolute;width:6px;height:6px;background:#0A0A0C;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);}
+.ctxt{font-size:13px;color:var(--muted);}
+.choice.sel .ctxt{color:var(--white);font-weight:500;}
+.chips-wrap{display:flex;flex-wrap:wrap;gap:6px;}
+.chip{padding:7px 14px;background:var(--surface);border:1.5px solid var(--border);border-radius:20px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;user-select:none;transition:all 0.13s;}
+.chip:hover{border-color:var(--border2);color:var(--white);}
+.chip.sel{background:var(--teal-dim);border-color:var(--teal);color:var(--teal);}
+.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:28px;padding-top:20px;border-top:1px solid var(--border);}
+.btn-qback{font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer;}
+.btn-qback:hover{color:var(--white);}
+.btn-qback:disabled{opacity:0;pointer-events:none;}
+.btn-qnext{padding:11px 24px;background:var(--teal);color:#0A0A0C;font-size:12px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;border:none;border-radius:7px;cursor:pointer;transition:all 0.15s;}
+.btn-qnext:hover{background:#00E5D0;}
+.btn-qsubmit{background:var(--orange);}
+.btn-qsubmit:hover{background:#FF8555;}
+.pref-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.pref-card{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:all 0.13s;user-select:none;}
+.pref-card:hover{border-color:var(--border2);}
+.pref-card.sel{border-color:var(--teal);background:var(--teal-dim);}
+.pref-icon{font-size:22px;margin-bottom:7px;}
+.pref-name{font-size:13px;font-weight:700;color:var(--white);margin-bottom:2px;}
+.pref-desc{font-size:11px;color:var(--muted);line-height:1.3;}
+
+/* === DISCLAIMER === */
+#v-disclaimer{background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;}
+.disc-box{max-width:480px;width:100%;padding:48px 32px;}
+.disc-title{font-size:24px;font-weight:800;letter-spacing:-0.02em;margin-bottom:8px;text-align:center;}
+.disc-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:28px;line-height:1.65;}
+.disc-body{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:22px;max-height:240px;overflow-y:auto;}
+.disc-body p{font-size:12px;color:var(--muted);line-height:1.75;margin-bottom:10px;}
+.disc-body p:last-child{margin-bottom:0;}
+.disc-body strong{color:var(--white);}
+.disc-check{display:flex;align-items:flex-start;gap:12px;margin-bottom:22px;cursor:pointer;}
+.disc-check input[type=checkbox]{width:18px;height:18px;flex-shrink:0;margin-top:1px;accent-color:var(--teal);cursor:pointer;}
+.disc-check-lbl{font-size:12px;color:var(--muted);line-height:1.6;}
+.disc-check-lbl strong{color:var(--white);}
+.btn-disc{width:100%;padding:14px;background:var(--teal);color:#0A0A0C;font-size:12px;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;border:none;border-radius:8px;cursor:pointer;opacity:0.3;pointer-events:none;transition:all 0.15s;}
+.btn-disc.active{opacity:1;pointer-events:auto;}
+.disc-date{font-size:10px;color:var(--muted);text-align:center;margin-top:12px;}
+
+/* === RESULTS === */
+#v-results{background:var(--bg);}
+.r-hero{position:relative;overflow:hidden;padding-bottom:40px;}
+.r-hero-bg{position:absolute;inset:0;background:linear-gradient(180deg,var(--bg2) 0%,var(--bg) 100%);}
+.r-hero-glow{position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:400px;height:400px;background:radial-gradient(circle,var(--teal-dim) 0%,transparent 70%);pointer-events:none;}
+.r-nav{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;padding:20px 32px;}
+.r-body-wrap{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:0 32px 30px;text-align:center;}
+.r-greeting{font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--teal);margin-bottom:12px;}
+.r-name{font-size:clamp(28px,5vw,46px);font-weight:800;letter-spacing:-0.03em;margin-bottom:6px;}
+.r-meta-text{font-size:12px;color:var(--muted);margin-bottom:20px;}
+.tier-badge{display:inline-flex;align-items:center;gap:10px;padding:8px 16px 8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:40px;}
+.tb-dot{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#0A0A0C;}
+.tb-text{font-size:11px;font-weight:600;color:var(--white);}
+.r-content{max-width:640px;margin:0 auto;padding:0 32px 80px;}
+.r-sec{margin-bottom:32px;}
+.r-sec-title{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:12px;}
+.r-sec-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.domain-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.domain-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+.dc-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+.dc-label{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);}
+.dc-bar{height:2px;background:var(--surface3);border-radius:2px;overflow:hidden;}
+.dc-fill{height:100%;border-radius:2px;}
+.track-card{border-radius:12px;overflow:hidden;border:1px solid var(--border);}
+.track-head{padding:22px 24px;display:flex;gap:16px;align-items:flex-start;}
+.track-num{font-size:52px;font-weight:800;line-height:1;flex-shrink:0;letter-spacing:-0.04em;opacity:0.7;font-family:var(--font-head);}
+.track-info h3{font-size:18px;font-weight:800;margin-bottom:5px;letter-spacing:-0.02em;}
+.track-why{font-size:12px;opacity:0.6;line-height:1.55;}
+.track-body{background:var(--bg3);padding:22px 24px;}
+.track-body p{font-size:13px;color:rgba(255,255,255,0.65);line-height:1.75;margin-bottom:10px;}
+.track-body p:last-child{margin-bottom:0;}
+.lim-list{display:flex;flex-direction:column;gap:7px;}
+.lim-item{display:flex;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:13px 15px;}
+.lim-num{min-width:22px;height:22px;border-radius:6px;background:var(--teal-dim);border:1px solid rgba(0,199,180,0.2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:var(--teal);flex-shrink:0;margin-top:1px;}
+.lim-title{font-weight:700;font-size:12.5px;margin-bottom:2px;}
+.lim-body{font-size:11.5px;color:var(--muted);line-height:1.5;}
+.pref-summary{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;}
+.ps-title{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.ps-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.ps-item{font-size:11px;color:var(--muted);}
+.ps-item span{color:var(--white);font-weight:600;}
+.wu-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.wu-head{background:linear-gradient(135deg,rgba(0,199,180,0.12),rgba(255,107,53,0.08));border-bottom:1px solid var(--border);padding:16px 20px;display:flex;align-items:center;gap:10px;}
+.wu-badge{font-size:9px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:3px 9px;border-radius:4px;background:var(--teal);color:#0A0A0C;}
+.wu-title-txt{font-size:13px;font-weight:700;}
+.wu-body{padding:18px 20px;}
+.wu-quote{font-size:12px;color:var(--teal);font-style:italic;margin-bottom:14px;line-height:1.6;}
+.wu-steps{display:flex;flex-direction:column;gap:6px;}
+.wu-step{display:flex;gap:10px;padding:9px 11px;background:var(--bg3);border-radius:6px;border:1px solid var(--border);}
+.wu-num{width:20px;height:20px;flex-shrink:0;border-radius:5px;background:var(--teal-dim);border:1px solid rgba(0,199,180,0.2);color:var(--teal);font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+.wu-name{font-size:12px;font-weight:700;margin-bottom:1px;}
+.wu-note-txt{font-size:11px;color:var(--muted);}
+.wu-nn{display:inline-block;font-size:8px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;background:var(--orange-dim);color:var(--orange);border:1px solid rgba(255,107,53,0.2);padding:1px 6px;border-radius:3px;margin-top:3px;}
+.next-cta{background:linear-gradient(135deg,var(--surface),var(--bg3));border:1px solid var(--border);border-radius:14px;padding:28px 24px;text-align:center;}
+.next-cta-eye{font-size:9px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--teal);margin-bottom:10px;}
+.next-cta-title{font-size:22px;font-weight:800;letter-spacing:-0.02em;margin-bottom:8px;}
+.next-cta-sub{font-size:13px;color:var(--muted);line-height:1.65;margin-bottom:22px;max-width:320px;margin-left:auto;margin-right:auto;}
+.next-cta-sub{margin-bottom:22px;}
+.cta-actions{display:flex;flex-direction:column;gap:8px;}
+.btn-cta-main{width:100%;padding:14px;background:var(--teal);color:#0A0A0C;font-size:12px;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;border:none;border-radius:8px;cursor:pointer;transition:all 0.15s;}
+.btn-cta-main:hover{background:#00E5D0;transform:translateY(-1px);}
+.btn-cta-secondary{width:100%;padding:12px;background:var(--surface2);color:var(--white);font-size:11px;font-weight:700;border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all 0.15s;}
+.btn-cta-secondary:hover{background:var(--surface3);}
+.btn-cta-coach{width:100%;padding:11px;background:none;color:var(--muted);font-size:11px;border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all 0.15s;}
+.btn-cta-coach:hover{color:var(--white);border-color:var(--border2);}
+.modifier-badge{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--orange-dim);border:1px solid rgba(255,107,53,0.2);border-radius:8px;font-size:12px;color:var(--orange);font-weight:600;margin-top:10px;}
+
+/* === CHECK-IN === */
+#v-checkin{background:var(--bg);}
+.ci-body{max-width:560px;margin:0 auto;padding:28px 32px 100px;}
+.ci-profile-row{display:flex;align-items:center;gap:14px;padding:16px 18px;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:24px;}
+.cp-avatar{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#0A0A0C;flex-shrink:0;}
+.cp-name{font-size:14px;font-weight:700;}
+.cp-track{font-size:11px;color:var(--muted);}
+.ci-block{margin-bottom:24px;}
+.ci-label{display:block;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--white);margin-bottom:8px;}
+.ci-sub{font-size:12px;color:var(--muted);margin-bottom:10px;}
+.readiness-display{text-align:center;margin:8px 0 4px;}
+.readiness-num{font-size:52px;font-weight:800;letter-spacing:-0.04em;font-family:var(--font-head);}
+.readiness-num span{font-size:20px;color:var(--muted);}
+input[type=range]{width:100%;-webkit-appearance:none;height:4px;border-radius:2px;background:var(--surface3);outline:none;margin:8px 0;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--teal);cursor:pointer;box-shadow:0 0 12px var(--teal-glow);}
+.tbtn-row{display:flex;gap:5px;flex-wrap:wrap;}
+.tbtn{padding:8px 14px;background:var(--surface);border:1.5px solid var(--border);border-radius:7px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all 0.13s;}
+.tbtn:hover{border-color:var(--border2);color:var(--white);}
+.tbtn.on{background:var(--teal-dim);border-color:var(--teal);color:var(--teal);}
+.equip-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
+.equip-card{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:12px;text-align:center;cursor:pointer;transition:all 0.15s;user-select:none;}
+.equip-card:hover{border-color:var(--border2);}
+.equip-card.sel{background:var(--teal-dim);border-color:var(--teal);}
+.equip-icon{font-size:20px;margin-bottom:5px;}
+.equip-name{font-size:11px;font-weight:700;color:var(--white);margin-bottom:1px;}
+.equip-desc{font-size:9px;color:var(--muted);}
+.equip-card.sel .equip-name{color:var(--teal);}
+.focus-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.focus-card{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:13px;cursor:pointer;transition:all 0.15s;user-select:none;position:relative;}
+.focus-card:hover{border-color:var(--border2);}
+.focus-card.sel{background:var(--teal-dim);border-color:var(--teal);}
+.focus-check{width:16px;height:16px;border:2px solid var(--border2);border-radius:4px;position:absolute;top:10px;right:10px;transition:all 0.13s;}
+.focus-card.sel .focus-check{background:var(--teal);border-color:var(--teal);}
+.focus-icon{font-size:20px;margin-bottom:6px;}
+.focus-name{font-size:12px;font-weight:700;color:var(--white);margin-bottom:2px;}
+.focus-desc{font-size:10px;color:var(--muted);line-height:1.3;}
+.focus-card.sel .focus-name{color:var(--teal);}
+.pain-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
+.pain-chip{display:flex;align-items:center;gap:7px;padding:8px 13px;background:var(--surface);border:1.5px solid var(--border);border-radius:20px;cursor:pointer;user-select:none;transition:all 0.13s;}
+.pain-chip:hover{border-color:rgba(255,68,68,0.3);}
+.pain-chip.sel{background:var(--danger-dim);border-color:rgba(255,68,68,0.4);}
+.pain-chip-dot{width:7px;height:7px;border-radius:50%;background:var(--surface3);}
+.pain-chip.sel .pain-chip-dot{background:var(--danger);}
+.pain-chip-name{font-size:12px;font-weight:600;color:var(--muted);}
+.pain-chip.sel .pain-chip-name{color:var(--danger);}
+.pain-info-box{margin-top:8px;background:var(--danger-dim);border:1px solid rgba(255,68,68,0.2);border-radius:8px;padding:12px 15px;display:none;}
+.pain-info-box.vis{display:block;}
+.pain-info-head{font-size:10px;font-weight:700;color:var(--danger);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;}
+.pain-info-body{font-size:12px;color:rgba(255,100,100,0.8);line-height:1.6;}
+.pain-info-body b{font-weight:700;color:var(--danger);}
+.override-bar{display:flex;align-items:center;justify-content:space-between;background:var(--orange-dim);border:1px solid rgba(255,107,53,0.2);border-radius:8px;padding:10px 14px;margin-top:6px;}
+.override-txt{font-size:12px;color:var(--orange);}
+.override-txt strong{font-weight:700;}
+.btn-override{padding:7px 14px;background:var(--orange);color:#0A0A0C;font-size:11px;font-weight:800;border:none;border-radius:5px;cursor:pointer;}
+.override-confirm-box{background:var(--surface);border:1px solid rgba(255,107,53,0.2);border-radius:8px;padding:14px;margin-top:8px;display:none;}
+.override-confirm-box.vis{display:block;}
+.override-confirm-box p{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:12px;}
+.override-btns{display:flex;gap:8px;}
+.btn-ov-yes{padding:8px 16px;background:var(--orange);color:#0A0A0C;font-size:11px;font-weight:800;border:none;border-radius:5px;cursor:pointer;}
+.btn-ov-no{padding:8px 16px;background:none;color:var(--muted);font-size:11px;border:1px solid var(--border);border-radius:5px;cursor:pointer;}
+.est-time-txt{font-size:12px;color:var(--muted);margin-top:6px;}
+.est-time-txt strong{color:var(--white);font-weight:700;}
+.selbtn-row{display:flex;flex-wrap:wrap;gap:5px;}
+.selbtn{padding:7px 13px;background:var(--surface);border:1.5px solid var(--border);border-radius:7px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all 0.13s;}
+.selbtn:hover{border-color:var(--border2);color:var(--white);}
+.selbtn.on{background:var(--teal-dim);border-color:var(--teal);color:var(--teal);}
+.btn-generate{width:100%;padding:16px;background:linear-gradient(135deg,var(--teal),rgba(0,180,160,1));color:#0A0A0C;font-size:13px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;border:none;border-radius:10px;cursor:pointer;margin-top:16px;transition:all 0.2s;box-shadow:0 4px 20px var(--teal-glow);}
+.btn-generate:hover{transform:translateY(-2px);box-shadow:0 8px 32px var(--teal-glow);}
+
+/* === SESSION OUTPUT === */
+#v-session{background:var(--bg);}
+.sess-body{max-width:640px;margin:0 auto;padding:28px 32px 80px;}
+.sess-header{margin-bottom:24px;}
+.sess-eyebrow{font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--teal);margin-bottom:6px;}
+.sess-title{font-size:26px;font-weight:800;letter-spacing:-0.03em;margin-bottom:5px;}
+.sess-meta-text{font-size:12px;color:var(--muted);margin-bottom:16px;}
+.phase-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:20px;}
+.phase-badge-label{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);}
+.phase-badge-name{font-size:12px;font-weight:800;color:var(--orange);}
+.phase-badge-sub{font-size:10px;color:var(--muted);}
+.sess-note{padding:14px 16px;background:var(--surface2);border-left:3px solid var(--teal);border-radius:0 8px 8px 0;font-size:12px;color:var(--muted);font-style:italic;line-height:1.65;margin-bottom:20px;}
+.sess-complex{margin-bottom:20px;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.sc-header{background:var(--surface);padding:12px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);}
+.sc-num{width:28px;height:28px;border-radius:8px;background:var(--teal-dim);border:1px solid rgba(0,199,180,0.2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--teal);}
+.sc-title{font-size:13px;font-weight:800;color:var(--white);flex:1;}
+.sc-type-tag{font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:3px 9px;border-radius:4px;}
+.sc-type-pap{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(0,199,180,0.2);}
+.sc-type-fc{background:linear-gradient(135deg,var(--teal-dim),var(--orange-dim));color:var(--white);border:1px solid var(--border);}
+.sc-type-tri{background:var(--orange-dim);color:var(--orange);border:1px solid rgba(255,107,53,0.2);}
+.sc-type-std{background:var(--surface2);color:var(--muted);border:1px solid var(--border);}
+.sc-time{font-size:11px;color:var(--muted);}
+.sc-exercises{background:var(--bg3);}
+.ex-row{display:grid;grid-template-columns:40px 1fr 52px 52px;align-items:start;padding:12px 18px;border-bottom:1px solid var(--border);}
+.ex-row:last-child{border-bottom:none;}
+.ex-id{font-size:10px;font-weight:800;color:var(--teal);letter-spacing:0.06em;padding-top:2px;}
+.ex-nc{padding:0 8px;}
+.ex-n{font-size:13px;font-weight:700;margin-bottom:2px;}
+.ex-c{font-size:11px;color:var(--muted);line-height:1.45;}
+.ex-sc,.ex-rc{text-align:center;}
+.ex-val{font-size:15px;font-weight:800;font-family:var(--font-head);}
+.ex-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;}
+.ex-isometric{background:rgba(0,199,180,0.04);}
+.iso-badge{display:inline-block;font-size:8px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;background:var(--teal-dim);color:var(--teal);border:1px solid rgba(0,199,180,0.2);padding:1px 5px;border-radius:3px;margin-top:3px;}
+.btn-another{width:100%;padding:13px;background:var(--surface);color:var(--white);font-size:12px;font-weight:700;border:1px solid var(--border);border-radius:8px;cursor:pointer;margin-top:20px;transition:all 0.15s;}
+.btn-another:hover{background:var(--surface2);}
+.history-section{margin-top:32px;padding-top:24px;border-top:1px solid var(--border);}
+.history-title{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.history-item{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;font-size:12px;}
+.hi-date{color:var(--muted);min-width:90px;}
+.hi-name{color:var(--white);font-weight:600;flex:1;}
+.hi-sess{font-size:10px;color:var(--teal);}
+
+/* === PIN === */
+#v-pin{background:var(--bg);min-height:100vh;display:flex;align-items:center;justify-content:center;}
+.pin-box{max-width:360px;width:100%;padding:48px 32px;text-align:center;}
+.pin-logo{font-size:13px;font-weight:800;color:var(--white);margin-bottom:28px;letter-spacing:-0.01em;}
+.pin-sub{font-size:13px;color:var(--muted);margin-bottom:28px;line-height:1.6;}
+.pin-label{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;text-align:left;}
+.pin-inp{width:100%;padding:14px;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;font-size:20px;font-weight:700;color:var(--white);text-align:center;letter-spacing:0.3em;outline:none;margin-bottom:10px;}
+.pin-inp:focus{border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-dim);}
+.btn-pin{width:100%;padding:14px;background:var(--teal);color:#0A0A0C;font-size:12px;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;border:none;border-radius:8px;cursor:pointer;margin-bottom:8px;transition:all 0.15s;}
+.btn-pin:hover{background:#00E5D0;}
+.pin-err{font-size:12px;color:var(--danger);margin-bottom:12px;display:none;}
+.btn-pin-back{background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;}
+.btn-pin-back:hover{color:var(--white);}
+
+/* === COACH === */
+#v-coach{background:var(--bg);min-height:100vh;}
+.coach-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:16px 32px;display:flex;justify-content:space-between;align-items:center;}
+.coach-bar h1{font-size:18px;font-weight:800;letter-spacing:-0.02em;}
+.coach-date{font-size:11px;color:var(--muted);margin-top:2px;}
+.coach-right{display:flex;align-items:center;gap:8px;}
+.cbadge{font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:3px 9px;border-radius:4px;}
+.cbadge-r{background:var(--danger-dim);color:var(--danger);border:1px solid rgba(255,68,68,0.2);}
+.cbadge-s{background:var(--orange-dim);color:var(--orange);border:1px solid rgba(255,107,53,0.2);}
+.btn-exit{padding:7px 14px;background:none;color:var(--muted);font-size:11px;font-weight:600;border:1px solid var(--border);border-radius:6px;cursor:pointer;transition:all 0.15s;}
+.btn-exit:hover{color:var(--white);border-color:var(--border2);}
+.coach-inner{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 65px);}
+.coach-sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:20px 0;}
+.coach-tabs{display:flex;flex-direction:column;}
+.ctab{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;font-size:12px;font-weight:600;color:var(--muted);background:none;border:none;cursor:pointer;text-align:left;transition:all 0.13s;border-left:3px solid transparent;}
+.ctab:hover{color:var(--white);background:var(--surface);}
+.ctab.on{color:var(--teal);background:var(--teal-dim);border-left-color:var(--teal);}
+.member-badge{font-size:8px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:2px 6px;border-radius:3px;background:var(--teal-dim);color:var(--teal);border:1px solid rgba(0,199,180,0.2);}
+.demo-badge{font-size:8px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:2px 6px;border-radius:3px;background:var(--surface2);color:var(--muted);border:1px solid var(--border);}
+.coach-body{padding:28px 32px;overflow-y:auto;max-height:calc(100vh - 65px);}
+.c-sec{margin-bottom:28px;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.c-sec-title{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);padding:14px 18px;border-bottom:1px solid var(--border);background:var(--bg2);}
+.c-sec-body{padding:18px;}
+.score-row{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;padding:18px;}
+.sc-cell{text-align:center;}
+.sc-lbl{font-size:8px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.sc-num{font-size:20px;font-weight:800;font-family:var(--font-head);}
+.i-table{width:100%;border-collapse:collapse;}
+.i-table th{font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);}
+.i-table td{padding:8px 12px;font-size:12px;border-bottom:1px solid var(--border);vertical-align:top;}
+.i-table tr:last-child td{border-bottom:none;}
+.i-field{color:var(--muted);white-space:nowrap;width:140px;}
+.i-val{color:var(--white);}
+.flags{display:flex;flex-direction:column;gap:8px;padding:18px;}
+.flag{border-radius:8px;overflow:hidden;border:1px solid var(--border);}
+.flag.high{border-color:rgba(255,68,68,0.3);}
+.flag.med{border-color:rgba(255,107,53,0.3);}
+.flag.watch{border-color:var(--border2);}
+.flag-hd{display:flex;align-items:center;gap:8px;padding:9px 13px;background:var(--bg3);}
+.flag-lv{font-size:8px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:2px 7px;border-radius:3px;}
+.flag.high .flag-lv{background:var(--danger-dim);color:var(--danger);}
+.flag.med .flag-lv{background:var(--orange-dim);color:var(--orange);}
+.flag.watch .flag-lv{background:var(--surface2);color:var(--muted);}
+.flag-ti{font-size:12px;font-weight:700;}
+.flag-bd{font-size:12px;color:var(--muted);padding:9px 13px;line-height:1.55;}
+.prios{display:flex;flex-direction:column;gap:8px;padding:18px;}
+.prio-row{display:grid;grid-template-columns:90px 1fr;gap:12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.prio-ph{background:var(--surface2);padding:12px;font-size:11px;font-weight:700;color:var(--teal);display:flex;align-items:center;}
+.prio-r{padding:12px;}
+.prio-t{font-size:13px;font-weight:700;margin-bottom:3px;}
+.prio-i{font-size:11px;color:var(--muted);}
+.agenda{display:flex;flex-direction:column;gap:0;padding:18px;}
+.ag-row{display:grid;grid-template-columns:90px 140px 1fr;gap:0;border:1px solid var(--border);border-radius:0;margin-bottom:-1px;}
+.ag-row:first-child{border-radius:8px 8px 0 0;}
+.ag-row:last-child{border-radius:0 0 8px 8px;margin-bottom:0;}
+.ag-t{background:var(--surface2);padding:10px 12px;font-size:10px;font-weight:700;color:var(--muted);display:flex;align-items:center;}
+.ag-i{padding:10px 12px;font-weight:700;font-size:12px;color:var(--white);border-right:1px solid var(--border);display:flex;align-items:center;}
+.ag-n{padding:10px 12px;font-size:12px;color:var(--muted);display:flex;align-items:center;line-height:1.45;}
+.fill-in{padding:18px;}
+.fi-title{font-weight:700;font-size:12px;color:var(--white);margin-bottom:12px;}
+.fi-g{display:flex;flex-direction:column;gap:10px;}
+.fi-row label{display:block;font-size:9px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+.fi-row input,.fi-row textarea{background:var(--bg);font-size:12px;padding:9px 12px;}
+.del-btn{margin:12px 18px 0;padding:9px 16px;background:none;color:var(--danger);border:1px solid rgba(255,68,68,0.2);border-radius:6px;cursor:pointer;font-size:11px;}
+.history-full{padding:18px;}
+.hist-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+.hist-item:last-child{border-bottom:none;}
+.hist-date{font-size:11px;color:var(--muted);}
+.hist-name{font-size:12px;font-weight:700;color:var(--white);}
+.hist-cycle{font-size:10px;color:var(--teal);}
+.monthly-report{padding:18px;}
+.mr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+.mr-stat{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;}
+.mr-num{font-size:22px;font-weight:800;color:var(--teal);font-family:var(--font-head);}
+.mr-lbl{font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-top:2px;}
+.btn-clear-report{padding:8px 16px;background:var(--danger-dim);color:var(--danger);border:1px solid rgba(255,68,68,0.2);border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;}
+
+/* === SAMPLES === */
+#v-samples{background:var(--bg);}
+.sample-body{max-width:760px;margin:0 auto;padding:40px 32px 80px;}
+.cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
+.sample-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all 0.18s;}
+.sample-card:hover{border-color:var(--border2);transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,0.3);}
+.sc-body-inner{padding:20px;}
+.sc-av{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#0A0A0C;margin-bottom:12px;}
+.sc-name{font-size:17px;font-weight:800;margin-bottom:2px;letter-spacing:-0.02em;}
+.sc-smeta{font-size:11px;color:var(--muted);margin-bottom:10px;}
+.sc-bio{font-size:12px;color:rgba(255,255,255,0.55);line-height:1.55;}
+.sc-foot-inner{padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+
+/* RESPONSIVE */
+@media(max-width:700px){
+  .cards-grid,.coach-inner{grid-template-columns:1fr;}
+  .coach-sidebar{display:none;}
+  .domain-grid,.ps-grid,.input-2col,.equip-grid{grid-template-columns:1fr 1fr;}
+  .score-row{grid-template-columns:repeat(3,1fr);}
+  .pref-grid,.focus-grid{grid-template-columns:1fr 1fr;}
+  .ag-row{grid-template-columns:1fr;}
+  .prio-row{grid-template-columns:1fr;}
+}
+@media(max-width:420px){
+  .equip-grid{grid-template-columns:repeat(2,1fr);}
+  .domain-grid,.ps-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- WELCOME -->
+<div id="v-welcome" class="view active">
+  <div class="welcome-noise"></div>
+  <div class="welcome-glow-teal"></div>
+  <div class="welcome-glow-orange"></div>
+  <div class="welcome-content">
+    <div class="top-bar" style="background:transparent;border-bottom:1px solid var(--border);">
+      <div class="brand">
+        <div class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+        <span class="brand-name">FitCortex <em>by Joe Lego Performance</em></span>
+      </div>
+      <button class="btn-ghost" onclick="go('pin')">Coach Access</button>
+    </div>
+    <div class="welcome-hero">
+      <div class="w-eyebrow">Intelligence · Periodization · Performance</div>
+      <div class="w-title">
+        <div class="line1">Train with</div>
+        <div class="line2">Precision.</div>
+      </div>
+      <p class="w-sub">A professional programming engine built on French contrast and PAP science. Know exactly what to do — every session, every phase.</p>
+      <div class="w-actions">
+        <button class="btn-primary" onclick="go('profiles')">Get Started</button>
+        <button class="btn-secondary" onclick="go('samples')">View Demo Profiles</button>
+      </div>
+      <div class="w-stats">
+        <div class="ws-item"><span class="ws-num teal">4</span><span class="ws-label">Phases</span></div>
+        <div class="ws-item"><span class="ws-num orange">48</span><span class="ws-label">Sessions</span></div>
+        <div class="ws-item"><span class="ws-num teal">PAP</span><span class="ws-label">Engine</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILES -->
+<div id="v-profiles" class="view">
+  <div class="top-bar">
+    <div class="brand">
+      <div class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+      <span class="brand-name">FitCortex</span>
+    </div>
+    <button class="btn-ghost" onclick="go('welcome')">Back</button>
+  </div>
+  <div class="page-body">
+    <div class="page-head"><h2>Select Profile</h2><p>Your assessment is saved to this device. Select your name to pick up where you left off.</p></div>
+    <div class="profile-list" id="profile-list"></div>
+    <div class="divider"><div class="dl"></div><div class="dt">New member</div><div class="dl"></div></div>
+    <button class="btn-primary" style="margin-bottom:10px" onclick="startFresh()">Create New Profile</button>
+    <button class="btn-secondary" onclick="go('samples')">View Demo Profiles</button>
+  </div>
+</div>
+
+<!-- SAMPLES -->
+<div id="v-samples" class="view">
+  <div class="top-bar">
+    <div class="brand"><div class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div><span class="brand-name">FitCortex</span></div>
+    <button class="btn-ghost" onclick="go('welcome')">Back</button>
+  </div>
+  <div class="sample-body">
+    <div class="page-head"><h2>Demo Profiles</h2><p>Tap any profile to see the full experience.</p></div>
+    <div class="cards-grid">
+      <div class="sample-card" onclick="loadSample('marcus')">
+        <div class="sc-body-inner"><div class="sc-av" style="background:var(--teal)">MD</div><div class="sc-name">Marcus D.</div><div class="sc-smeta">Age 34 · Handicap 6</div><div class="sc-bio">Hedge fund manager. Athletic background. Clubhead speed has plateaued despite consistent gym training.</div></div>
+        <div class="sc-foot-inner"><span class="pill pill-teal">Track 4 · Performance</span><span style="color:var(--muted)">→</span></div>
+      </div>
+      <div class="sample-card" onclick="loadSample('james')">
+        <div class="sc-body-inner"><div class="sc-av" style="background:var(--orange)">JR</div><div class="sc-name">James R.</div><div class="sc-smeta">Age 44 · Handicap 12</div><div class="sc-bio">Business owner. 15+ nights travel monthly. No consistent routine. Wants to stay sharp on the road.</div></div>
+        <div class="sc-foot-inner"><span class="pill pill-orange">Track 5 · Travel</span><span style="color:var(--muted)">→</span></div>
+      </div>
+      <div class="sample-card" onclick="loadSample('alex')">
+        <div class="sc-body-inner"><div class="sc-av" style="background:var(--danger)">AT</div><div class="sc-name">Alex T.</div><div class="sc-smeta">Age 38 · Handicap 8</div><div class="sc-bio">Former college athlete. Trains 4x/week. Low back tightens after every round. Early extension fault.</div></div>
+        <div class="sc-foot-inner"><span class="pill pill-red">Track 6 · Low Back</span><span style="color:var(--muted)">→</span></div>
+      </div>
+    </div>
+    <div class="divider"><div class="dl"></div><div class="dt">Or start fresh</div><div class="dl"></div></div>
+    <button class="btn-primary" onclick="startFresh()">Begin Your Assessment</button>
+  </div>
+</div>
+
+<!-- DISCLAIMER -->
+<div id="v-disclaimer" class="view">
+  <div class="disc-box">
+    <div class="brand" style="justify-content:center;margin-bottom:24px;">
+      <div class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+      <span class="brand-name">FitCortex</span>
+    </div>
+    <div class="disc-title">Terms of Use</div>
+    <div class="disc-sub">Please read and accept before continuing.</div>
+    <div class="disc-body">
+      <p><strong>FitCortex is a training tool, not a medical service.</strong> The programming provided is for general fitness purposes. It is not a substitute for professional medical advice, diagnosis, or treatment.</p>
+      <p>By using FitCortex you confirm that you have been cleared by a licensed healthcare professional for physical training, that you accept full responsibility for your exercise choices, and that you understand intensity and load must be adjusted based on how you feel that day.</p>
+      <p><strong>If you experience chest pain, shortness of breath, dizziness, or sudden sharp pain — stop immediately and seek medical attention.</strong> Do not train through acute pain.</p>
+      <p>Joe Lego Performance and FitCortex are not liable for injury resulting from the use of these programs. All exercise carries inherent risk.</p>
+      <p>Session data is stored locally on your device only. No data is transmitted externally.</p>
+    </div>
+    <label class="disc-check">
+      <input type="checkbox" id="disc-cb" onchange="discToggle()">
+      <span class="disc-check-lbl">I have read the above. I understand FitCortex is a training tool. <strong>I am medically cleared for exercise and accept full responsibility for my training choices.</strong></span>
+    </label>
+    <button class="btn-disc" id="btn-disc-go" onclick="discAccept()">Continue to Assessment</button>
+    <div class="disc-date" id="disc-date"></div>
+  </div>
+</div>
+
+<!-- QUESTIONNAIRE -->
+<div id="v-questionnaire" class="view">
+  <div class="q-header">
+    <div class="q-header-inner">
+      <div class="q-top"><div class="q-label">FitCortex Assessment</div><div class="q-step" id="q-step">Section 1 of 7</div></div>
+      <div class="q-prog-bar"><div class="q-prog-fill" id="q-prog" style="width:14%"></div></div>
+      <div class="q-section-name" id="q-sname">About You</div>
+    </div>
+  </div>
+  <div class="q-body">
+    <!-- S1 -->
+    <div class="q-sec vis" id="qs1">
+      <div class="q-sec-head"><h2>The basics.</h2><p>Filled out once only. Your profile saves permanently to this device.</p></div>
+      <div class="q-block"><label class="q-label-text">Full name</label><input type="text" id="qname" placeholder="e.g. Marcus Davis"></div>
+      <div class="q-block input-2col">
+        <div><label class="q-label-text">Age</label><input type="number" id="qage" placeholder="38" min="18" max="80"></div>
+        <div><label class="q-label-text">Handicap</label><select id="qhcp"><option value="">Select…</option><option value="scratch">Scratch to 5</option><option value="mid">6 to 15</option><option value="high">16 to 25</option><option value="casual">Casual</option></select></div>
+      </div>
+      <div class="q-block"><label class="q-label-text">Rounds per month?</label>
+        <div class="choices" id="qrounds">
+          <div class="choice" onclick="pick(this,'qrounds')"><div class="cdot"></div><span class="ctxt">1–2 rounds</span></div>
+          <div class="choice" onclick="pick(this,'qrounds')"><div class="cdot"></div><span class="ctxt">3–4 rounds</span></div>
+          <div class="choice" onclick="pick(this,'qrounds')"><div class="cdot"></div><span class="ctxt">5+ rounds</span></div>
+        </div>
+      </div>
+      <div class="q-nav"><button class="btn-qback" disabled>Back</button><button class="btn-qnext" onclick="nxt(1)">Continue</button></div>
+    </div>
+    <!-- S2 -->
+    <div class="q-sec" id="qs2">
+      <div class="q-sec-head"><h2>Pain and injury.</h2><p>Be specific. This is the most important section.</p></div>
+      <div class="q-block"><label class="q-label-text">Current pain during or after golf?</label>
+        <div class="choices" id="qpain">
+          <div class="choice" onclick="pick(this,'qpain')"><div class="cdot"></div><span class="ctxt">No pain at all</span></div>
+          <div class="choice" onclick="pick(this,'qpain')"><div class="cdot"></div><span class="ctxt">Mild — I notice it but it does not stop me</span></div>
+          <div class="choice" onclick="pick(this,'qpain')"><div class="cdot"></div><span class="ctxt">Moderate — it affects how I play</span></div>
+          <div class="choice" onclick="pick(this,'qpain')"><div class="cdot"></div><span class="ctxt">Significant — I have had to skip golf</span></div>
+        </div>
+      </div>
+      <div class="q-block"><label class="q-label-text">Where? (select all that apply)</label>
+        <div class="chips-wrap" id="qlocs">
+          <div class="chip" onclick="tog(this)">Low back</div><div class="chip" onclick="tog(this)">Hip / glute</div><div class="chip" onclick="tog(this)">Knee</div><div class="chip" onclick="tog(this)">Shoulder</div><div class="chip" onclick="tog(this)">Elbow</div><div class="chip" onclick="tog(this)">Neck</div><div class="chip" onclick="tog(this)">Mid / upper back</div><div class="chip" onclick="tog(this)">No pain</div>
+        </div>
+      </div>
+      <div class="q-block"><label class="q-label-text">Surgery or significant injury in last 5 years?</label>
+        <div class="choices" id="qsurg">
+          <div class="choice" onclick="pick(this,'qsurg');document.getElementById('surgdet').style.display='none'"><div class="cdot"></div><span class="ctxt">No</span></div>
+          <div class="choice" onclick="pick(this,'qsurg');document.getElementById('surgdet').style.display='block'"><div class="cdot"></div><span class="ctxt">Yes</span></div>
+        </div>
+      </div>
+      <div id="surgdet" style="display:none" class="q-block"><label class="q-label-text">Briefly describe it</label><textarea id="qsurgdet" placeholder="e.g. L4-L5 disc herniation 2022…"></textarea></div>
+      <div class="q-nav"><button class="btn-qback" onclick="prv(2)">Back</button><button class="btn-qnext" onclick="nxt(2)">Continue</button></div>
+    </div>
+    <!-- S3 -->
+    <div class="q-sec" id="qs3">
+      <div class="q-sec-head"><h2>Movement and mobility.</h2><p>How your body feels day to day.</p></div>
+      <div class="q-block"><label class="q-label-text">Overall flexibility?</label>
+        <div class="choices" id="qmob">
+          <div class="choice" onclick="pick(this,'qmob')"><div class="cdot"></div><span class="ctxt">Good — I move freely</span></div>
+          <div class="choice" onclick="pick(this,'qmob')"><div class="cdot"></div><span class="ctxt">Somewhat stiff — especially mornings</span></div>
+          <div class="choice" onclick="pick(this,'qmob')"><div class="cdot"></div><span class="ctxt">Quite stiff — I regularly feel limited</span></div>
+        </div>
+      </div>
+      <div class="q-block"><label class="q-label-text">Hip rotation in your swing?</label>
+        <div class="choices" id="qhip">
+          <div class="choice" onclick="pick(this,'qhip')"><div class="cdot"></div><span class="ctxt">Good — hips clear easily</span></div>
+          <div class="choice" onclick="pick(this,'qhip')"><div class="cdot"></div><span class="ctxt">Limited — hips feel restricted</span></div>
+          <div class="choice" onclick="pick(this,'qhip')"><div class="cdot"></div><span class="ctxt">I compensate — early extension or sway</span></div>
+        </div>
+      </div>
+      <div class="q-block"><label class="q-label-text">Upper back and shoulder rotation?</label>
+        <div class="choices" id="qthor">
+          <div class="choice" onclick="pick(this,'qthor')"><div class="cdot"></div><span class="ctxt">Good — full shoulder turn</span></div>
+          <div class="choice" onclick="pick(this,'qthor')"><div class="cdot"></div><span class="ctxt">Limited — restricted backswing</span></div>
+        </div>
+      </div>
+      <div class="q-nav"><button class="btn-qback" onclick="prv(3)">Back</button><button class="btn-qnext" onclick="nxt(3)">Continue</button></div>
+    </div>
+    <!-- S4 -->
+    <div class="q-sec" id="qs4">
+      <div class="q-sec-head"><h2>Fitness and lifestyle.</h2><p>Be honest — this shapes your entire program.</p></div>
+      <div class="q-block"><label class="q-label-text">Current training frequency?</label>
+        <div class="choices" id="qex">
+          <div class="choice" onclick="pick(this,'qex')"><div class="cdot"></div><span class="ctxt">Rarely or never — no consistent training</span></div>
+          <div class="choice" onclick="pick(this,'qex')"><div class="cdot"></div><span class="ctxt">1–2 days per week</span></div>
+          <div class="choice" onclick="pick(this,'qex')"><div class="cdot"></div><span class="ctxt">3–4 days per week</span></div>
+          <div class="choice" onclick="pick(this,'qex')"><div class="cdot"></div><span class="ctxt">5+ days per week</span></div>
+        </div>
+      </div>
+      <div class="q-block"><label class="q-label-text">Energy levels back 9 vs front 9?</label>
+        <div class="choices" id="qenergy">
+          <div class="choice" onclick="pick(this,'qenergy')"><div class="cdot"></div><span class="ctxt">Consistent — same energy all round</span></div>
+          <div class="choice" onclick="pick(this,'qenergy')"><div class="cdot"></div><span class="ctxt">Slight fade — a bit less sharp by 15</span></div>
+          <div class="choice" onclick="pick(this,'qenergy')"><div class="cdot"></div><span class="ctxt">Low — I fade significantly after 12 holes</span></div>
+        </div>
+      </div>
+      <div class="q-block"><label class="q-label-text">Travel — nights away per month?</label>
+        <div class="choices" id="qtrav">
+          <div class="choice" onclick="pick(this,'qtrav')"><div class="cdot"></div><span class="ctxt">None or minimal — under 3 nights</span></div>
+          <div class="choice" onclick="pick(this,'qtrav')"><div class="cdot"></div><span class="ctxt">Moderate — 4–10 nights</span></div>
+          <div class="choice" onclick="pick(this,'qtrav')"><div class="cdot"></div><span class="ctxt">Heavy — 10+ nights</span></div>
+        </div>
+      </div>
+      <div class="q-nav"><button class="btn-qback" onclick="prv(4)">Back</button><button class="btn-qnext" onclick="nxt(4)">Continue</button></div>
+    </div>
+    <!-- S5 -->
+    <div class="q-sec" id="qs5">
+      <div class="q-sec-head"><h2>Goals and limitations.</h2><p>Be specific. The more detail, the better your program.</p></div>
+      <div class="q-block"><label class="q-label-text">Primary golf goal?</label>
+        <div class="choices" id="qgoal">
+          <div class="choice" onclick="pick(this,'qgoal')"><div class="cdot"></div><span class="ctxt">Distance — more yards off the tee</span></div>
+          <div class="choice" onclick="pick(this,'qgoal')"><div class="cdot"></div><span class="ctxt">Consistency and control — score lower</span></div>
+          <div class="choice" onclick="pick(this,'qgoal')"><div class="cdot"></div><span class="ctxt">Play without pain — long term durability</span></div>
+          <div class="choice" onclick="pick(this,'qgoal')"><div class="cdot"></div><span class="ctxt">Overall fitness — general improvement</span></div>
+        </div>
+      </div>
+      <div class="q-block"><label class="q-label-text">What is your biggest physical limitation right now?</label><textarea id="qlimit" placeholder="e.g. Low back tightens after holes 12-14. Hip rotation feels blocked."></textarea></div>
+      <div class="q-block"><label class="q-label-text">What does success look like in 90 days?</label><textarea id="qsuccess" placeholder="e.g. Complete 18 holes without back pain, add 15 yards."></textarea></div>
+      <div class="q-nav"><button class="btn-qback" onclick="prv(5)">Back</button><button class="btn-qnext" onclick="nxt(5)">Continue</button></div>
+    </div>
+    <!-- S6 -->
+    <div class="q-sec" id="qs6">
+      <div class="q-sec-head"><h2>Exercise preferences.</h2><p>Your sessions are built around what works for your body.</p></div>
+      <div class="q-block"><label class="q-label-text">Training history with weights?</label>
+        <div class="choices" id="qtraining">
+          <div class="choice" onclick="pick(this,'qtraining')"><div class="cdot"></div><span class="ctxt">Currently training — in a regular routine now</span></div>
+          <div class="choice" onclick="pick(this,'qtraining')"><div class="cdot"></div><span class="ctxt">Recently returned — within the last 3 months</span></div>
+          <div class="choice" onclick="pick(this,'qtraining')"><div class="cdot"></div><span class="ctxt">Not recently — lapsed more than 6 months</span></div>
+          <div class="choice" onclick="pick(this,'qtraining')"><div class="cdot"></div><span class="ctxt">Never trained with weights systematically</span></div>
+        </div>
+      </div>
+      <div class="q-block"><label class="q-label-text">Jumping and plyometric movements?</label>
+        <div class="choices" id="qjump">
+          <div class="choice" onclick="pick(this,'qjump')"><div class="cdot"></div><span class="ctxt">Yes — knees and joints are healthy</span></div>
+          <div class="choice" onclick="pick(this,'qjump')"><div class="cdot"></div><span class="ctxt">No — low-impact only please</span></div>
+        </div>
+      </div>
+      <div class="q-block"><label class="q-label-text">Squat preference?</label>
+        <div class="pref-grid" id="qsquat">
+          <div class="pref-card" onclick="pickPref(this,'qsquat','goblet')"><div class="pref-icon">🏋️</div><div class="pref-name">Goblet / Hack</div><div class="pref-desc">Dumbbell or machine. Safe and controlled.</div></div>
+          <div class="pref-card" onclick="pickPref(this,'qsquat','barbell')"><div class="pref-icon">🔩</div><div class="pref-name">Barbell Back Squat</div><div class="pref-desc">High-performance compound loading.</div></div>
+          <div class="pref-card" onclick="pickPref(this,'qsquat','split')"><div class="pref-icon">🦵</div><div class="pref-name">Split Squat / Lunge</div><div class="pref-desc">Unilateral. Hip-dominant loading.</div></div>
+          <div class="pref-card" onclick="pickPref(this,'qsquat','none')"><div class="pref-icon">🚫</div><div class="pref-name">No squatting</div><div class="pref-desc">Avoid knee-dominant quad loading.</div></div>
+        </div>
+      </div>
+      <div class="q-nav"><button class="btn-qback" onclick="prv(6)">Back</button><button class="btn-qnext" onclick="nxt(6)">Continue</button></div>
+    </div>
+    <!-- S7 -->
+    <div class="q-sec" id="qs7">
+      <div class="q-sec-head"><h2>Training style.</h2><p>Last section. Your workout structure preferences.</p></div>
+      <div class="q-block"><label class="q-label-text">Hinge / deadlift preference?</label>
+        <div class="pref-grid" id="qhinge">
+          <div class="pref-card" onclick="pickPref(this,'qhinge','db')"><div class="pref-icon">🥊</div><div class="pref-name">Dumbbell / KB</div><div class="pref-desc">RDL, swings. Free weight loading.</div></div>
+          <div class="pref-card" onclick="pickPref(this,'qhinge','trap')"><div class="pref-icon">🔷</div><div class="pref-name">Trap Bar</div><div class="pref-desc">Neutral spine. Heavy loading.</div></div>
+          <div class="pref-card" onclick="pickPref(this,'qhinge','barbell')"><div class="pref-icon">🏋️</div><div class="pref-name">Barbell</div><div class="pref-desc">Conventional or sumo. Max strength.</div></div>
+          <div class="pref-card" onclick="pickPref(this,'qhinge','none')"><div class="pref-icon">🚫</div><div class="pref-name">No heavy hinging</div><div class="pref-desc">Skip loaded hip hinge patterns.</div></div>
+        </div>
+      </div>
+      <div class="q-block"><label class="q-label-text">Pull / row preference?</label>
+        <div class="pref-grid" id="qpull">
+          <div class="pref-card" onclick="pickPref(this,'qpull','cable')"><div class="pref-icon">🔴</div><div class="pref-name">Cable</div><div class="pref-desc">Seated rows. Constant tension.</div></div>
+          <div class="pref-card" onclick="pickPref(this,'qpull','db')"><div class="pref-icon">💪</div><div class="pref-name">Dumbbell</div><div class="pref-desc">Single arm rows. Free motion.</div></div>
+          <div class="pref-card" onclick="pickPref(this,'qpull','pullup')"><div class="pref-icon">⬆️</div><div class="pref-name">Pull-ups</div><div class="pref-desc">Vertical pulling. Bodyweight or weighted.</div></div>
+          <div class="pref-card" onclick="pickPref(this,'qpull','machine')"><div class="pref-icon">⚙️</div><div class="pref-name">Machine</div><div class="pref-desc">Supported. Lower injury risk.</div></div>
+        </div>
+      </div>
+      <div class="q-block"><label class="q-label-text">Session structure style?</label>
+        <div class="pref-grid" id="qstyle">
+          <div class="pref-card" onclick="pickPref(this,'qstyle','straight','straight')"><div class="pref-icon">📋</div><div class="pref-name">One at a time</div><div class="pref-desc">Complete all sets, then next exercise.</div></div>
+          <div class="pref-card" onclick="pickPref(this,'qstyle','superset','superset')"><div class="pref-icon">⚡</div><div class="pref-name">Supersets / Pairs</div><div class="pref-desc">Alternate exercises. More efficient.</div></div>
+          <div class="pref-card" onclick="pickPref(this,'qstyle','circuit','circuit')"><div class="pref-icon">🔄</div><div class="pref-name">Circuits</div><div class="pref-desc">Full rotations through all exercises.</div></div>
+          <div class="pref-card" onclick="pickPref(this,'qstyle','coach','coach')"><div class="pref-icon">🎯</div><div class="pref-name">Coach choice</div><div class="pref-desc">Built for optimal results. Trust the system.</div></div>
+        </div>
+      </div>
+      <div class="q-nav"><button class="btn-qback" onclick="prv(7)">Back</button><button class="btn-qnext btn-qsubmit" onclick="submitQ()">Complete Assessment</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div id="v-results" class="view">
+  <div class="r-hero">
+    <div class="r-hero-bg"></div>
+    <div class="r-hero-glow"></div>
+    <div class="r-nav">
+      <div class="brand"><div class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div><span class="brand-name">FitCortex</span></div>
+      <button class="btn-ghost" onclick="go('profiles')">Switch Profile</button>
+    </div>
+    <div class="r-body-wrap">
+      <div class="r-greeting">Your Assessment Results</div>
+      <div class="r-name" id="rname">–</div>
+      <div class="r-meta-text" id="rmeta">–</div>
+      <div id="rtier"></div>
+    </div>
+  </div>
+  <div class="r-content" id="rbody"></div>
+</div>
+
+<!-- CHECK-IN -->
+<div id="v-checkin" class="view">
+  <div class="top-bar">
+    <div class="brand"><div class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div><span class="brand-name">FitCortex</span></div>
+    <button class="btn-ghost" onclick="go('results')">Back</button>
+  </div>
+  <div class="ci-body">
+    <div class="ci-profile-row" id="ci-profile"></div>
+    <div class="ci-block">
+      <label class="ci-label">Readiness — how do you feel today?</label>
+      <div class="readiness-display"><div class="readiness-num" id="ci-score-disp" style="color:var(--teal)">7<span>/10</span></div></div>
+      <input type="range" min="1" max="10" value="7" id="ci-range" oninput="ciScore(this.value)">
+      <div class="override-bar" id="override-bar" style="display:none">
+        <div class="override-txt"><strong>Readiness 1–2.</strong> Blood flow protocol recommended today.</div>
+        <button class="btn-override" onclick="showOverrideConfirm()">Override</button>
+      </div>
+      <div class="override-confirm-box" id="override-confirm">
+        <p>You are choosing to train above your readiness level. Keep intensity moderate. Stop if you feel worse. This decision is yours.</p>
+        <div class="override-btns">
+          <button class="btn-ov-yes" onclick="confirmOverride()">I understand — proceed</button>
+          <button class="btn-ov-no" onclick="cancelOverride()">Cancel</button>
+        </div>
+      </div>
+    </div>
+    <div class="ci-block">
+      <label class="ci-label">Available time?</label>
+      <div class="tbtn-row">
+        <button class="tbtn" onclick="ciTime(this,20)">20 min</button>
+        <button class="tbtn on" onclick="ciTime(this,30)">30 min</button>
+        <button class="tbtn" onclick="ciTime(this,45)">45 min</button>
+        <button class="tbtn" onclick="ciTime(this,60)">60 min</button>
+        <button class="tbtn" onclick="ciTime(this,75)">75 min</button>
+      </div>
+    </div>
+    <div class="ci-block">
+      <label class="ci-label">Session controls</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <div class="ci-sub">Exercises</div>
+          <div class="selbtn-row" id="ex-count-btns">
+            <button class="selbtn" onclick="ciExCount(this,3)">3</button>
+            <button class="selbtn" onclick="ciExCount(this,4)">4</button>
+            <button class="selbtn on" onclick="ciExCount(this,5)">5</button>
+            <button class="selbtn" onclick="ciExCount(this,6)">6</button>
+            <button class="selbtn" onclick="ciExCount(this,7)">7</button>
+          </div>
+        </div>
+        <div>
+          <div class="ci-sub">Rest periods</div>
+          <div class="selbtn-row" id="rest-btns">
+            <button class="selbtn" onclick="ciRest(this,45)">45s</button>
+            <button class="selbtn on" onclick="ciRest(this,60)">60s</button>
+            <button class="selbtn" onclick="ciRest(this,90)">90s</button>
+            <button class="selbtn" onclick="ciRest(this,120)">2 min</button>
+          </div>
+        </div>
+      </div>
+      <div class="est-time-txt" id="est-time">Estimated session: <strong>~35 min</strong> including warm-up</div>
+    </div>
+    <div class="ci-block">
+      <label class="ci-label">Equipment available today?</label>
+      <div class="ci-sub">Select everything you have access to.</div>
+      <div class="equip-grid">
+        <div class="equip-card sel" onclick="togEquip(this,'barbell')" id="eq-barbell"><div class="equip-icon">🏋️</div><div class="equip-name">Barbells</div><div class="equip-desc">Full barbell setup</div></div>
+        <div class="equip-card sel" onclick="togEquip(this,'dumbbell')" id="eq-dumbbell"><div class="equip-icon">💪</div><div class="equip-name">Dumbbells</div><div class="equip-desc">Full rack</div></div>
+        <div class="equip-card sel" onclick="togEquip(this,'cable')" id="eq-cable"><div class="equip-icon">🔴</div><div class="equip-name">Cables</div><div class="equip-desc">Cable machine</div></div>
+        <div class="equip-card sel" onclick="togEquip(this,'machine')" id="eq-machine"><div class="equip-icon">⚙️</div><div class="equip-name">Machines</div><div class="equip-desc">Leg press, row</div></div>
+        <div class="equip-card sel" onclick="togEquip(this,'cardio')" id="eq-cardio"><div class="equip-icon">🏃</div><div class="equip-name">Cardio</div><div class="equip-desc">Treadmill, bike</div></div>
+        <div class="equip-card" onclick="togEquip(this,'bands')" id="eq-bands"><div class="equip-icon">🟡</div><div class="equip-name">Bands</div><div class="equip-desc">Resistance bands</div></div>
+        <div class="equip-card" onclick="togEquip(this,'kettlebell')" id="eq-kettlebell"><div class="equip-icon">⚫</div><div class="equip-name">Kettlebells</div><div class="equip-desc">KB set</div></div>
+        <div class="equip-card sel" onclick="togEquip(this,'bodyweight')" id="eq-bodyweight"><div class="equip-icon">🏠</div><div class="equip-name">Bodyweight</div><div class="equip-desc">Always available</div></div>
+        <div class="equip-card" onclick="togEquip(this,'medball')" id="eq-medball"><div class="equip-icon">⚽</div><div class="equip-name">Med Ball</div><div class="equip-desc">Medicine ball</div></div>
+        <div class="equip-card" onclick="togEquip(this,'fullgym')" id="eq-fullgym"><div class="equip-icon">🏟️</div><div class="equip-name">Full Gym</div><div class="equip-desc">Sleds, GHD, rip</div></div>
+      </div>
+    </div>
+    <div class="ci-block">
+      <label class="ci-label">Session focus today?</label>
+      <div class="ci-sub">Select one or more.</div>
+      <div class="focus-grid">
+        <div class="focus-card sel" onclick="togFocus(this,'golf')" id="fc-golf"><div class="focus-check"></div><div class="focus-icon">⛳</div><div class="focus-name">Golf Performance</div><div class="focus-desc">Rotation, power, swing mechanics</div></div>
+        <div class="focus-card" onclick="togFocus(this,'strength')" id="fc-strength"><div class="focus-check"></div><div class="focus-icon">🏋️</div><div class="focus-name">Strength</div><div class="focus-desc">Heavy compound lifts</div></div>
+        <div class="focus-card" onclick="togFocus(this,'fatloss')" id="fc-fatloss"><div class="focus-check"></div><div class="focus-icon">🔥</div><div class="focus-name">Fat Loss</div><div class="focus-desc">Intervals, circuits</div></div>
+        <div class="focus-card" onclick="togFocus(this,'recovery')" id="fc-recovery"><div class="focus-check"></div><div class="focus-icon">💚</div><div class="focus-name">Recovery</div><div class="focus-desc">Correctives, mobility</div></div>
+      </div>
+    </div>
+    <div class="ci-block">
+      <label class="ci-label">Any pain or soreness today?</label>
+      <div class="ci-sub">Tap any area. Session adjusts automatically.</div>
+      <div class="pain-chips">
+        <div class="pain-chip" id="pc-neck" onclick="togPain('neck')"><div class="pain-chip-dot"></div><span class="pain-chip-name">Neck</span></div>
+        <div class="pain-chip" id="pc-shoulder" onclick="togPain('shoulder')"><div class="pain-chip-dot"></div><span class="pain-chip-name">Shoulder</span></div>
+        <div class="pain-chip" id="pc-upperback" onclick="togPain('upperback')"><div class="pain-chip-dot"></div><span class="pain-chip-name">Upper back</span></div>
+        <div class="pain-chip" id="pc-lowback" onclick="togPain('lowback')"><div class="pain-chip-dot"></div><span class="pain-chip-name">Low back</span></div>
+        <div class="pain-chip" id="pc-hip" onclick="togPain('hip')"><div class="pain-chip-dot"></div><span class="pain-chip-name">Hip</span></div>
+        <div class="pain-chip" id="pc-knee" onclick="togPain('knee')"><div class="pain-chip-dot"></div><span class="pain-chip-name">Knee</span></div>
+        <div class="pain-chip" id="pc-elbow" onclick="togPain('elbow')"><div class="pain-chip-dot"></div><span class="pain-chip-name">Elbow</span></div>
+        <div class="pain-chip" id="pc-ankle" onclick="togPain('ankle')"><div class="pain-chip-dot"></div><span class="pain-chip-name">Ankle</span></div>
+      </div>
+      <div class="pain-info-box" id="pain-info"><div class="pain-info-head" id="pain-info-head"></div><div class="pain-info-body" id="pain-info-body"></div></div>
+    </div>
+    <button class="btn-generate" onclick="generateSession()">Generate My Session →</button>
+  </div>
+</div>
+
+<!-- SESSION OUTPUT -->
+<div id="v-session" class="view">
+  <div class="top-bar">
+    <div class="brand"><div class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div><span class="brand-name">FitCortex</span></div>
+    <button class="btn-ghost" onclick="go('checkin')">New Session</button>
+  </div>
+  <div class="sess-body">
+    <div class="sess-header">
+      <div class="sess-eyebrow" id="sess-eyebrow">Today</div>
+      <div class="sess-title" id="sess-title">Your Session</div>
+      <div class="sess-meta-text" id="sess-meta">–</div>
+      <div id="sess-phase-badge"></div>
+    </div>
+    <div id="sess-out"></div>
+    <button class="btn-another" onclick="go('checkin')">Generate a Different Session</button>
+    <div class="history-section" id="sess-history"></div>
+  </div>
+</div>
+
+<!-- PIN -->
+<div id="v-pin" class="view">
+  <div class="top-bar" style="position:absolute;top:0;left:0;right:0;background:transparent;border:none;">
+    <div class="brand"><div class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div><span class="brand-name">FitCortex</span></div>
+  </div>
+  <div class="pin-box">
+    <div class="pin-logo">Coach &amp; Administrator Access</div>
+    <div class="pin-sub">Joe Lego Performance — Internal use only.</div>
+    <div class="pin-label">Enter PIN</div>
+    <input type="password" class="pin-inp" id="pin-inp" maxlength="6" placeholder="••••">
+    <button class="btn-pin" onclick="chkPin()">Access Dashboard</button>
+    <div class="pin-err" id="pin-err">Incorrect PIN. Try again.</div>
+    <button class="btn-pin-back" onclick="go('welcome')">← Back</button>
+  </div>
+</div>
+
+<!-- COACH -->
+<div id="v-coach" class="view">
+  <div class="coach-bar">
+    <div>
+      <h1>Coach Dashboard</h1>
+      <div class="coach-date" id="coach-date">Joe Lego Performance · Internal Use Only</div>
+    </div>
+    <div class="coach-right">
+      <span class="cbadge cbadge-r">Confidential</span>
+      <span class="cbadge cbadge-s">Do Not Share</span>
+      <button class="btn-exit" onclick="go('welcome')">Exit</button>
+    </div>
+  </div>
+  <div class="coach-inner">
+    <div class="coach-sidebar"><div class="coach-tabs" id="coach-tabs"></div></div>
+    <div class="coach-body" id="coach-body"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+var AD=null, CI_RS=7, CI_TA=30,
+    CI_EQUIP=['barbell','dumbbell','cable','machine','cardio','bodyweight'],
+    CI_FOCUS=['golf'], CC=null, CI_USED=[],
+    CI_PAIN=[], CI_EX_COUNT=5, CI_REST=60, CI_OVERRIDE=false;
+var PREF_STYLE=null, PREF_EQUIP=null;
+var SNAMES=['','About You','Pain and Injury','Movement','Fitness','Goals','Preferences','Training Style'];
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function go(v){
+  var all=['welcome','profiles','samples','questionnaire','results','checkin','session','pin','coach','disclaimer'];
+  all.forEach(function(n){
+    var el=document.getElementById('v-'+n);
+    if(el){el.style.display=n===v?'block':'none';el.className='view'+(n===v?' active':'');}
+  });
+  if(v==='profiles') renderProfiles();
+  window.scrollTo(0,0);
+}
+
+// ============================================================
+// STORAGE
+// ============================================================
+function getAllProfiles(){try{var d=localStorage.getItem('fc9');return d?JSON.parse(d):[];}catch(e){return[];}}
+function saveAllProfiles(p){try{localStorage.setItem('fc9',JSON.stringify(p));}catch(e){}}
+function saveProfile(p){var ps=getAllProfiles();var i=ps.findIndex(function(x){return x.meta.name===p.meta.name;});if(i>-1){ps[i]=p;}else{ps.push(p);}saveAllProfiles(ps);}
+function deleteProfile(name){saveAllProfiles(getAllProfiles().filter(function(p){return p.meta.name!==name;}));}
+function getSessionHistory(name){try{var d=localStorage.getItem('fc9_hist_'+name);return d?JSON.parse(d):[];}catch(e){return[];}}
+function saveSessionHistory(name,entry){var h=getSessionHistory(name);h.unshift(entry);h=h.slice(0,100);try{localStorage.setItem('fc9_hist_'+name,JSON.stringify(h));}catch(e){}}
+function getMonthlyReport(){try{var d=localStorage.getItem('fc9_monthly');return d?JSON.parse(d):{sessions:0,month:new Date().getMonth()};}catch(e){return{sessions:0,month:new Date().getMonth()};}}
+function saveMonthlyReport(r){try{localStorage.setItem('fc9_monthly',JSON.stringify(r));}catch(e){}}
+function clearMonthlyReport(){try{localStorage.removeItem('fc9_monthly');}catch(e){}}
+
+// ============================================================
+// PERIODIZATION — 4 Phases driven by session count
+// ============================================================
+var PHASES={
+  foundation:{name:'Foundation',sessions:[1,12],sub:'Sessions 1–12',desc:'Movement pattern mastery. Load calibration. Tissue preparation.'},
+  development:{name:'Development',sessions:[13,24],sub:'Sessions 13–24',desc:'Progressive loading. PAP pairs introduced. Rotational power builds.'},
+  intensification:{name:'Intensification',sessions:[25,36],sub:'Sessions 25–36',desc:'French contrast complexes. Tri-sets. High CNS demand.'},
+  peak:{name:'Peak',sessions:[37,48],sub:'Sessions 37–48',desc:'Full French contrast. Max intent. Deload every 4th session.'}
+};
+
+function getPhase(sessCount){
+  if(sessCount<=12) return 'foundation';
+  if(sessCount<=24) return 'development';
+  if(sessCount<=36) return 'intensification';
+  return 'peak';
+}
+function isDeload(sessCount){
+  // Deload every 4th session
+  return sessCount>0 && sessCount%4===0;
+}
+// Session cycle position within a 5-session cycle
+// 1:PAP pair, 2:PAP pair variant, 3:Tri-set, 4:Full French contrast, 5:Overload / deload
+function getCyclePos(sessCount){
+  var pos=(sessCount-1)%5;
+  return pos+1; // 1-5
+}
+function getComplexType(sessCount,phase){
+  if(isDeload(sessCount)) return 'deload';
+  if(phase==='foundation') return 'pap_basic';
+  var pos=getCyclePos(sessCount);
+  if(pos===1||pos===2) return 'pap';
+  if(pos===3) return 'triset';
+  if(pos===4) return 'french_contrast';
+  if(pos===5) return phase==='peak'?'french_contrast':'overload';
+  return 'pap';
+}
+
+// ============================================================
+// TIER SYSTEM
+// ============================================================
+var TIERS={
+  T1:{num:1,name:'Mobility Priority',col:'#00C7B4',why:'Domain A (Mobility) scored highest.',
+    summary:['Restricted hip and thoracic rotation is the primary barrier. Before power, you need range.','Hip internal rotation restriction is the most common root cause of early extension and restricted backswing. We resolve the restriction, then build performance on top.'],
+    limits:[{a:'Hip internal rotation restriction',b:'Root cause of the restricted turn and early extension fault.'},{a:'Thoracic rotation restriction',b:'Limits shoulder turn. When T-spine locks, lumbar compensates.'}],
+    wu:[{n:'Foam Roll',note:'Piriformis, quads, T-spine, lats.',nn:1},{n:'T-Spine Rotation',note:'Non-negotiable.',nn:1},{n:'Hip 90/90 Transitions',note:'5 reps per side.'},{n:'Walking Lunge with Rotation',note:'Progressive range.'},{n:'Band Walks and Pull-Aparts',note:'Activation.',nn:1},{n:'Pogo Hops x2',note:'Only if jump-approved.',nn:1}],
+    interp:'A high. Screen hip IR Session 1. Measure bilaterally.',
+    flags:[{c:'watch',lv:'WATCH',ti:'Assess bilaterally',bd:'Hip IR asymmetry over 15 degrees — flag for orthopedic review.'}],
+    prios:[{ph:'Sessions 1–12',ti:'Passive mobility only',it:'Hip 90/90, T-spine CARs. No loading.'},{ph:'Sessions 13–24',ti:'Loaded mobility',it:'RDL with reach, cable rotation light.'},{ph:'Sessions 25+',ti:'Rotational performance',it:'Only after screen improves.'}],
+    agenda:[{t:'0:00–0:10',i:'Report walkthrough',n:'Confirm goals.'},{t:'0:10–0:30',i:'Movement screen',n:'Hip IR bilateral. Measure.'},{t:'0:30–0:50',i:'Phase 1 delivery',n:'Daily mobility routine.'},{t:'0:50–1:00',i:'Pre-round warm-up',n:'Walk through protocol.'}]
+  },
+  T3:{num:3,name:'Strength Foundation',col:'#6B8CFF',why:'Domain C (Strength) scored highest.',
+    summary:['A strong base is needed before performance work. Master the fundamental patterns first.','The posterior chain and core must be reliable before any rotational power work. Rushing this phase is the most common programming error.'],
+    limits:[{a:'Training base deficit',b:'Posterior chain and core need foundational work first.'},{a:'Movement pattern competency',b:'Squat, hinge, push, pull must be clean before loading.'}],
+    wu:[{n:'Foam Roll',note:'Targeted.',nn:1},{n:'T-Spine Rotation',note:'Non-negotiable.',nn:1},{n:'Walking Lunge',note:'Bodyweight only Phase 1.'},{n:'Band Walks',note:'Glute activation.',nn:1},{n:'Band Pull-Aparts',note:'Scapular activation.',nn:1}],
+    interp:'C high. Establish movement baselines first.',
+    flags:[{c:'watch',lv:'WATCH',ti:'Form first always',bd:'Regress immediately if form breaks.'}],
+    prios:[{ph:'Sessions 1–12',ti:'Pattern mastery',it:'Goblet squat, RDL, dead bug.'},{ph:'Sessions 13–24',ti:'Progressive loading',it:'Add weight in improved range.'},{ph:'Sessions 25+',ti:'Golf integration',it:'First rotation — landmine and cable chop.'}],
+    agenda:[{t:'0:00–0:10',i:'Report walkthrough',n:'Confirm goals.'},{t:'0:10–0:35',i:'Movement baselines',n:'Squat, hinge, push, pull.'},{t:'0:35–0:55',i:'First session',n:'4 exercises maximum.'},{t:'0:55–1:00',i:'Program delivery',n:'Phase 1 program.'}]
+  },
+  T4:{num:4,name:'Golf Performance',col:'#00C7B4',why:'Domain D (Performance) scored highest. Active training, distance goal, competitive handicap.',
+    summary:['You are in a strong physical position. Focus goes to rotational power, hip-shoulder separation, and the specific physical qualities that produce distance.','Most fit amateurs leave significant performance on the table because they have never trained the specific patterns that generate power in a golf swing. French contrast and PAP complexes change that.'],
+    limits:[{a:'Rotational power ceiling',b:'Specific training unlocks this without any swing changes.'},{a:'Hip-shoulder separation',b:'Most important physical variable for power.'},{a:'Ground force production',b:'Trainable. Produces measurable distance gains.'}],
+    wu:[{n:'Foam Roll',note:'T-spine, glutes, lats.',nn:1},{n:'T-Spine Rotation',note:'Non-negotiable.',nn:1},{n:'Walking Lunge with Rotation',note:'Progressive range.'},{n:'Hip-Shoulder Separation Drill',note:'Dowel test first session.'},{n:'Band Walks and Pull-Aparts',note:'Glute med and scapular.',nn:1},{n:'Cable Rotation to Ballistic',note:'Rotation ladder stages 1–4.'},{n:'Box Jumps x2',note:'NS priming. Max intent. Only if jump-approved.',nn:1},{n:'Rip Trainer - Full Ladder',note:'All 5 stages. Finish with 2–3 club rips.'}],
+    interp:'D=9. Healthy athlete. Assess hip-shoulder separation Session 1. Measure clubhead speed for 60-day comparison.',
+    flags:[{c:'watch',lv:'WATCH',ti:'Mild shoulder pain',bd:'Assess shoulder ER Session 1.'},{c:'watch',lv:'NOTE',ti:'High round frequency',bd:'No heavy lower body within 24h of a round.'}],
+    prios:[{ph:'Sessions 1–12',ti:'Rotational baseline',it:'Med ball, hip-shoulder drills, cable rotation.'},{ph:'Sessions 13–24',ti:'PAP pairs introduced',it:'Strength + plyometric pairs. French contrast progression.'},{ph:'Sessions 25–36',ti:'Intensification',it:'Full French contrast. Max intent throws, heavy cable.'},{ph:'Always',ti:'Scheduling',it:'No heavy lower body within 24h of a round.'}],
+    agenda:[{t:'0:00–0:10',i:'Report walkthrough',n:'Confirm goals. Review preferences.'},{t:'0:10–0:25',i:'Hip-shoulder screen',n:'Dowel test.'},{t:'0:25–0:45',i:'Rotational baseline',n:'Med ball throws — document.'},{t:'0:45–1:00',i:'Program delivery',n:'Phase 1 program.'}]
+  },
+  T5:{num:5,name:'Travel Plan',col:'#FF6B35',why:'Domain F (Travel) scored highest. Heavy travel confirmed.',
+    summary:['The biggest barrier is building a program that works around your life. Home weeks are full-program weeks. Travel weeks are maintenance.','A consistent moderate program beats a perfect program that never gets done.'],
+    limits:[{a:'Equipment access on the road',b:'Program cannot rely on specific machines.'},{a:'Schedule consistency',b:'Must work in 20 or 60 minutes.'},{a:'Recovery during travel',b:'Jet lag has measurable effects.'}],
+    wu:[{n:'Foam Roll or Self-Massage',note:'Hands or travel roller.',nn:1},{n:'T-Spine Rotation',note:'Non-negotiable everywhere.',nn:1},{n:'Walking Lunge with Rotation',note:'Hotel hallway or room.'},{n:'Inchworm to Cobra',note:'No equipment needed.'},{n:'Band Walks',note:'Pack a band.',nn:1},{n:'Band Pull-Aparts',note:'Posterior shoulder.',nn:1}],
+    interp:'F=9. Bands must travel at all times.',
+    flags:[{c:'med',lv:'MED',ti:'Strength baseline moderate',bd:'Track 3 modifier activates Phase 2.'},{c:'watch',lv:'WATCH',ti:'Back-nine energy fade',bd:'Norwegian 4x4 cardio — home weeks only.'}],
+    prios:[{ph:'Home weeks',ti:'Full loading',it:'All adaptation happens here.'},{ph:'Travel days',ti:'Band protocol 20 min',it:'Same every trip.'},{ph:'Jet lag days',ti:'Recovery only',it:'Walk, mobility, no training.'}],
+    agenda:[{t:'0:00–0:10',i:'Report walkthrough',n:'Frame travel protocol as primary product.'},{t:'0:10–0:25',i:'Travel audit',n:'Nights, time zones, hotel gym access.'},{t:'0:25–0:45',i:'Band protocol',n:'Teach 20-min travel protocol.'},{t:'0:45–1:00',i:'Program delivery',n:'Home week program plus travel card.'}]
+  },
+  T6:{num:6,name:'Low Back Track',col:'#FF4444',why:'Domain B (Pain) scored high with low back confirmed — automatic Track 6 override.',
+    summary:['Your low back is the primary constraint. Not fitness, not technique — the low back.','The pattern driving your pain is almost certainly connected to restricted hip rotation. We fix the hip restriction, not the swing.','Within 6–8 weeks most members complete full rounds significantly more comfortably.'],
+    limits:[{a:'Low back pain sensitivity',b:'Every load choice is made around the spine.'},{a:'Hip rotation restriction',b:'Likely the physical cause of early extension.'},{a:'Thoracic stiffness',b:'When T-spine does not rotate, lumbar compensates.'}],
+    wu:[{n:'Low Back Corrective Protocol',note:'Full 5-stage: Inhibit, Mobilize, Activate, Reintroduce, Stabilize.',nn:1},{n:'Cat-Cow',note:'Rhythmic lumbar decompression.'},{n:'Cobra to Rock Back',note:'Find pain-free direction before loading.'},{n:'Figure-Four Stretch',note:'Hip ER release.'},{n:'Side-to-Side Knee Rotations',note:'The lumbar reset.',nn:1},{n:'Glute Bridges',note:'Glutes must fire before upright movement.',nn:1},{n:'Wall-Supported Rotation',note:'Pain-free only.'},{n:'Band Walks',note:'Glute med activation.',nn:1}],
+    interp:'B high with low back — hard override T6. Pain log 0–10 before and after every session is mandatory.',
+    flags:[{c:'high',lv:'HIGH',ti:'Pain persists after rounds',bd:'Do not advance to Phase 2 until two consecutive sessions below 3/10.'},{c:'med',lv:'MED',ti:'Hip compensation confirmed',bd:'Early extension is a hip mobility problem.'},{c:'watch',lv:'WATCH',ti:'Athletic background may mask severity',bd:'Objective 0–10 logging every session is essential.'}],
+    prios:[{ph:'Sessions 1–12',ti:'Anti-rotation only',it:'Dead bugs, bird dogs, side planks, bridges. NO rotation.'},{ph:'Sessions 13–24',ti:'Hip-dominant loading',it:'KB deadlift, banded hinge, step-ups. Gate: below 3/10.'},{ph:'Sessions 25+',ti:'Controlled rotation',it:'Half-kneeling cable, landmine. Gate: below 2/10 only.'}],
+    agenda:[{t:'0:00–0:10',i:'Report walkthrough',n:'Establish trust. Review restrictions.'},{t:'0:10–0:30',i:'Pain screening',n:'Lumbar provocative direction. Hip IR bilateral.'},{t:'0:30–0:50',i:'Movement screen',n:'Hip hinge, hip IR, T-spine rotation.'},{t:'0:50–1:00',i:'Program delivery',n:'Phase 1 program and warm-up card.'}]
+  },
+  T7:{num:7,name:'Upper Body Caution',col:'#FF6B35',why:'Domain B (Pain) high with shoulder or upper back location — Track 7 activated.',
+    summary:['Shoulder or upper back pain is restricting your game. This is almost always a combination of thoracic stiffness and scapular instability.','The shoulder cannot be isolated. Fix the thoracic and scapular control, and shoulder symptoms resolve.'],
+    limits:[{a:'Shoulder or upper back pain',b:'All pressing is modified or substituted.'},{a:'Thoracic restriction',b:'Root cause of compensatory shoulder movement.'},{a:'Scapular instability',b:'Stabilizers must fire reliably before power work.'}],
+    wu:[{n:'Foam Roll T-Spine',note:'Target upper back. Non-negotiable.',nn:1},{n:'T-Spine Rotation',note:'Non-negotiable.',nn:1},{n:'Band Pull-Aparts',note:'Scapular activation. Every session.',nn:1},{n:'Y-T-W',note:'Prone or cable. Stabilizer activation.',nn:1},{n:'Face Pulls',note:'Posterior shoulder.'},{n:'Wall Slides',note:'Scapular control.'},{n:'Pogo Hops x2',note:'Only if jump-approved.',nn:1}],
+    interp:'B high with shoulder/upper back. Overhead pressing restricted. Assess scapular control Session 1.',
+    flags:[{c:'high',lv:'HIGH',ti:'No overhead pressing',bd:'Landmine and cable only until shoulder cleared.'},{c:'med',lv:'MED',ti:'Thoracic mobility deficit',bd:'Must be addressed every session.'}],
+    prios:[{ph:'Sessions 1–12',ti:'Scapular control',it:'YTW, face pulls, band work only.'},{ph:'Sessions 13–24',ti:'Load introduction',it:'Landmine press. No barbell overhead.'},{ph:'Sessions 25+',ti:'Rotation integration',it:'Cable chop and lift. Golf-specific power.'}],
+    agenda:[{t:'0:00–0:10',i:'Report walkthrough',n:'Review restrictions carefully.'},{t:'0:10–0:30',i:'Shoulder screen',n:'Scapular control. Shoulder ER/IR.'},{t:'0:30–0:50',i:'Phase 1 session',n:'Band work and thoracic priority.'},{t:'0:50–1:00',i:'Program delivery',n:'Phase 1 program.'}]
+  },
+  T2:{num:2,name:'Energy and Recovery',col:'#A78BFA',why:'Domain E (Recovery) scored highest.',
+    summary:['Recovery and energy management is the rate limiter on your progress. More training is not the answer right now.','Sleep, stress, and recovery quality determine how much you can absorb from training. We address these first.'],
+    limits:[{a:'Recovery quality deficit',b:'High training stress without adequate recovery produces regression.'},{a:'Energy system efficiency',b:'Aerobic base needs attention.'}],
+    wu:[{n:'Foam Roll',note:'Full body. Parasympathetic activation.',nn:1},{n:'T-Spine Rotation',note:'Non-negotiable.',nn:1},{n:'Box Breathing',note:'4-4-4-4. Before training.',nn:1},{n:'Hip 90/90',note:'Hip prep.'},{n:'Band Walks',note:'Glute activation.',nn:1}],
+    interp:'E high. Assess sleep and stress before designing program.',
+    flags:[{c:'med',lv:'MED',ti:'High recovery demand',bd:'Volume must be lower than athlete expects. Frame this clearly.'},{c:'watch',lv:'WATCH',ti:'Norwegian 4x4 potential',bd:'Address aerobic base Phase 2.'}],
+    prios:[{ph:'Sessions 1–12',ti:'Recovery-first design',it:'Lower volume. Quality over quantity.'},{ph:'Sessions 13–24',ti:'Aerobic base',it:'Norwegian 4x4 introduced carefully.'},{ph:'Sessions 25+',ti:'Performance build',it:'Only after recovery markers improve.'}],
+    agenda:[{t:'0:00–0:10',i:'Recovery audit',n:'Sleep, HRV, stress levels.'},{t:'0:10–0:35',i:'Movement screen',n:'Baseline assessment.'},{t:'0:35–0:55',i:'Phase 1 session',n:'Lower volume, higher quality.'},{t:'0:55–1:00',i:'Recovery plan',n:'Non-negotiable lifestyle additions.'}]
+  }
+};
+
+// ============================================================
+// DEMO SAMPLES
+// ============================================================
+var SAMPLES={
+  marcus:{meta:{name:'Marcus D.',age:34,hcp:'scratch',date:'March 2025'},scores:{A:3,B:2,C:2,D:9,E:2,F:2},tier:'T4',mod:null,sessionCount:8,prefs:{training:'currently',jump:'yes',squat:'split',hinge:'trap',pull:'cable',style:'superset',equip:'free'},sc:{pain:'mild',locs:['shoulder'],surg:'no',mob:'good',hip:'good',thor:'good',ex:'moderate',energy:'high',trav:'none',goal:'distance',limit:'Clubhead speed plateaued 3 years.',success:'Add 20 yards, break 75.'},_demo:true},
+  james:{meta:{name:'James R.',age:44,hcp:'mid',date:'March 2025'},scores:{A:3,B:2,C:5,D:3,E:4,F:9},tier:'T5',mod:'T3',sessionCount:15,prefs:{training:'recently',jump:'yes',squat:'goblet',hinge:'db',pull:'cable',style:'straight',equip:'free'},sc:{pain:'none',locs:[],surg:'no',mob:'mild',hip:'limited',thor:'limited',ex:'light',energy:'fade',trav:'heavy',goal:'consistency',limit:'15 nights/month travel.',success:'Maintain game on the road.'},_demo:true},
+  alex:{meta:{name:'Alex T.',age:38,hcp:'scratch',date:'March 2025'},scores:{A:6,B:8,C:3,D:4,E:3,F:2},tier:'T6',mod:'T1',sessionCount:4,prefs:{training:'currently',jump:'no',squat:'split',hinge:'db',pull:'db',style:'straight',equip:'free'},sc:{pain:'moderate',locs:['Low back'],surg:'no',mob:'mild',hip:'compensate',thor:'limited',ex:'moderate',energy:'high',trav:'none',goal:'pain',limit:'Low back tightens after every round.',success:'Play 18 holes without tightness.'},_demo:true}
+};
+
+// ============================================================
+// EXERCISE LIBRARY (abbreviated from v8, all categories preserved)
+// ============================================================
+var EX_LIB=[
+  // cat1 - Fundamental Patterns
+  {n:"Barbell Back Squat",cat:"cat1",sub:"Squat Pattern",tag:"Standard",eq:["barbell"]},
+  {n:"Front Squat",cat:"cat1",sub:"Squat Pattern",tag:"Standard",eq:["barbell"]},
+  {n:"Goblet Squat",cat:"cat1",sub:"Squat Pattern",tag:"Standard",eq:["dumbbell"]},
+  {n:"Box Squat",cat:"cat1",sub:"Squat Pattern",tag:"Standard",eq:["barbell"]},
+  {n:"Hack Squat - Machine",cat:"cat1",sub:"Squat Pattern",tag:"Standard",eq:["machine"]},
+  {n:"Wall Sit - Isometric",cat:"cat1",sub:"Squat Pattern",tag:"Standard",eq:[]},
+  {n:"Trap Bar Deadlift",cat:"cat1",sub:"Hinge Pattern",tag:"Standard",eq:["barbell"]},
+  {n:"Conventional Barbell Deadlift",cat:"cat1",sub:"Hinge Pattern",tag:"Standard",eq:["barbell"]},
+  {n:"Sumo Deadlift",cat:"cat1",sub:"Hinge Pattern",tag:"Standard",eq:["barbell"]},
+  {n:"Romanian Deadlift - Barbell",cat:"cat1",sub:"Hinge Pattern",tag:"Standard",eq:["barbell"]},
+  {n:"Romanian Deadlift - Dumbbell",cat:"cat1",sub:"Hinge Pattern",tag:"Standard",eq:["dumbbell"]},
+  {n:"Good Mornings",cat:"cat1",sub:"Hinge Pattern",tag:"Standard",eq:["barbell"]},
+  {n:"Hip Thrust - Barbell",cat:"cat1",sub:"Hinge Pattern",tag:"Standard",eq:["barbell"]},
+  {n:"Hip Thrust - Dumbbell",cat:"cat1",sub:"Hinge Pattern",tag:"Standard",eq:["dumbbell"]},
+  {n:"Weighted Glute Bridge",cat:"cat1",sub:"Hinge Pattern",tag:"Standard",eq:["dumbbell"]},
+  {n:"Hip Hinge Hold - Isometric",cat:"cat1",sub:"Hinge Pattern",tag:"Signature",eq:[]},
+  // cat2 - Push/Pull
+  {n:"Barbell Bench Press - Flat",cat:"cat2",sub:"Horizontal Push",tag:"Standard",eq:["barbell"]},
+  {n:"Barbell Bench Press - Incline",cat:"cat2",sub:"Horizontal Push",tag:"Standard",eq:["barbell"]},
+  {n:"Dumbbell Bench Press - Flat",cat:"cat2",sub:"Horizontal Push",tag:"Standard",eq:["dumbbell"]},
+  {n:"Dumbbell Bench Press - Incline",cat:"cat2",sub:"Horizontal Push",tag:"Standard",eq:["dumbbell"]},
+  {n:"Cable Chest Press - Standing",cat:"cat2",sub:"Horizontal Push",tag:"Standard",eq:["cable"]},
+  {n:"Push-Up - Standard",cat:"cat2",sub:"Horizontal Push",tag:"Standard",eq:[]},
+  {n:"Push-Up - Close Grip",cat:"cat2",sub:"Horizontal Push",tag:"Standard",eq:[]},
+  {n:"Push-Up - Wide Grip",cat:"cat2",sub:"Horizontal Push",tag:"Standard",eq:[]},
+  {n:"Push-Up - Feet Elevated",cat:"cat2",sub:"Horizontal Push",tag:"Standard",eq:[]},
+  {n:"Dumbbell Flye - Flat",cat:"cat2",sub:"Horizontal Push",tag:"Standard",eq:["dumbbell"]},
+  {n:"Cable Flye - Low to High",cat:"cat2",sub:"Horizontal Push",tag:"Standard",eq:["cable"]},
+  {n:"Cable Flye - High to Low",cat:"cat2",sub:"Horizontal Push",tag:"Standard",eq:["cable"]},
+  {n:"Barbell Bent Over Row",cat:"cat2",sub:"Horizontal Pull",tag:"Standard",eq:["barbell"]},
+  {n:"Dumbbell Bent Over Row",cat:"cat2",sub:"Horizontal Pull",tag:"Standard",eq:["dumbbell"]},
+  {n:"Single-Arm Dumbbell Row",cat:"cat2",sub:"Horizontal Pull",tag:"Standard",eq:["dumbbell"]},
+  {n:"Seated Cable Row - Close Grip",cat:"cat2",sub:"Horizontal Pull",tag:"Standard",eq:["cable"]},
+  {n:"Seated Cable Row - Wide Grip",cat:"cat2",sub:"Horizontal Pull",tag:"Standard",eq:["cable"]},
+  {n:"Machine Row",cat:"cat2",sub:"Horizontal Pull",tag:"Standard",eq:["machine"]},
+  {n:"Chest Supported Row - Dumbbell",cat:"cat2",sub:"Horizontal Pull",tag:"Standard",eq:["dumbbell"]},
+  {n:"Inverted Row",cat:"cat2",sub:"Horizontal Pull",tag:"Standard",eq:[]},
+  {n:"Band Row",cat:"cat2",sub:"Horizontal Pull",tag:"Standard",eq:["bands"]},
+  // cat3 - Unilateral
+  {n:"Forward Lunge - Dumbbell",cat:"cat3",sub:"Lunge Variations",tag:"Standard",eq:["dumbbell"]},
+  {n:"Reverse Lunge - Dumbbell",cat:"cat3",sub:"Lunge Variations",tag:"Standard",eq:["dumbbell"]},
+  {n:"Walking Lunge - Dumbbell",cat:"cat3",sub:"Lunge Variations",tag:"Standard",eq:["dumbbell"]},
+  {n:"Lateral Lunge - Dumbbell",cat:"cat3",sub:"Lunge Variations",tag:"Standard",eq:["dumbbell"]},
+  {n:"Bulgarian Split Squat - Dumbbell",cat:"cat3",sub:"Lunge Variations",tag:"Standard",eq:["dumbbell"]},
+  {n:"Bulgarian Split Squat - Barbell",cat:"cat3",sub:"Lunge Variations",tag:"Standard",eq:["barbell"]},
+  {n:"Step-Up - Dumbbell",cat:"cat3",sub:"Lunge Variations",tag:"Standard",eq:["dumbbell"]},
+  {n:"Lateral Step-Up",cat:"cat3",sub:"Lunge Variations",tag:"Standard",eq:[]},
+  {n:"Single-Leg RDL - Dumbbell",cat:"cat3",sub:"Single Leg Posterior Chain",tag:"Standard",eq:["dumbbell"]},
+  {n:"Single-Leg RDL - Kettlebell",cat:"cat3",sub:"Single Leg Posterior Chain",tag:"Standard",eq:["kettlebell"]},
+  {n:"Single-Leg Hip Thrust",cat:"cat3",sub:"Single Leg Posterior Chain",tag:"Standard",eq:[]},
+  {n:"Rear Foot Elevated Hip Hinge",cat:"cat3",sub:"Single Leg Posterior Chain",tag:"Signature",eq:[]},
+  // cat4 - Vertical Press/Pull
+  {n:"Dumbbell Overhead Press - Standing",cat:"cat4",sub:"Shoulder Press - Vertical Push",tag:"Standard",eq:["dumbbell"]},
+  {n:"Dumbbell Overhead Press - Seated",cat:"cat4",sub:"Shoulder Press - Vertical Push",tag:"Standard",eq:["dumbbell"]},
+  {n:"Landmine Press - Standing",cat:"cat4",sub:"Shoulder Press - Vertical Push",tag:"Signature",eq:["barbell"]},
+  {n:"Half-Kneeling Landmine Press",cat:"cat4",sub:"Shoulder Press - Vertical Push",tag:"Signature",eq:["barbell"]},
+  {n:"Cable Overhead Press - Single Arm",cat:"cat4",sub:"Shoulder Press - Vertical Push",tag:"Standard",eq:["cable"]},
+  {n:"Machine Shoulder Press",cat:"cat4",sub:"Shoulder Press - Vertical Push",tag:"Standard",eq:["machine"]},
+  {n:"Push Press - Barbell",cat:"cat4",sub:"Shoulder Press - Vertical Push",tag:"Standard",eq:["barbell"]},
+  {n:"Pull-Up - Pronated Grip",cat:"cat4",sub:"Vertical Pull",tag:"Standard",eq:[]},
+  {n:"Pull-Up - Neutral Grip",cat:"cat4",sub:"Vertical Pull",tag:"Standard",eq:[]},
+  {n:"Chin-Up - Supinated Grip",cat:"cat4",sub:"Vertical Pull",tag:"Standard",eq:[]},
+  {n:"Lat Pulldown - Wide",cat:"cat4",sub:"Vertical Pull",tag:"Standard",eq:["cable"]},
+  {n:"Lat Pulldown - Close Grip",cat:"cat4",sub:"Vertical Pull",tag:"Standard",eq:["cable"]},
+  {n:"Single-Arm Lat Pulldown",cat:"cat4",sub:"Vertical Pull",tag:"Standard",eq:["cable"]},
+  // cat5 - Accessories
+  {n:"Leg Extension - Machine",cat:"cat5",sub:"Anterior Chain",tag:"Standard",eq:["machine"]},
+  {n:"Terminal Knee Extension - Band",cat:"cat5",sub:"Anterior Chain",tag:"Standard",eq:["bands"]},
+  {n:"Leg Curl - Machine",cat:"cat5",sub:"Posterior Chain",tag:"Standard",eq:["machine"]},
+  {n:"Nordic Hamstring Curl",cat:"cat5",sub:"Posterior Chain",tag:"Standard",eq:[]},
+  {n:"Calf Raise - Dumbbell",cat:"cat5",sub:"Posterior Chain",tag:"Standard",eq:["dumbbell"]},
+  {n:"Calf Raise - Machine",cat:"cat5",sub:"Posterior Chain",tag:"Standard",eq:["machine"]},
+  {n:"Single Leg Calf Raise",cat:"cat5",sub:"Posterior Chain",tag:"Standard",eq:[]},
+  // cat6 - Arms/Shoulders
+  {n:"Barbell Curl",cat:"cat6",sub:"Biceps",tag:"Standard",eq:["barbell"]},
+  {n:"Dumbbell Curl",cat:"cat6",sub:"Biceps",tag:"Standard",eq:["dumbbell"]},
+  {n:"Cable Curl",cat:"cat6",sub:"Biceps",tag:"Standard",eq:["cable"]},
+  {n:"Hammer Curl",cat:"cat6",sub:"Biceps",tag:"Standard",eq:["dumbbell"]},
+  {n:"Tricep Pushdown - Cable Rope",cat:"cat6",sub:"Triceps",tag:"Standard",eq:["cable"]},
+  {n:"Tricep Pushdown - Cable Bar",cat:"cat6",sub:"Triceps",tag:"Standard",eq:["cable"]},
+  {n:"Overhead Tricep Extension - Dumbbell",cat:"cat6",sub:"Triceps",tag:"Standard",eq:["dumbbell"]},
+  {n:"Skull Crushers - EZ Bar",cat:"cat6",sub:"Triceps",tag:"Standard",eq:["barbell"]},
+  {n:"Close Grip Bench Press",cat:"cat6",sub:"Triceps",tag:"Standard",eq:[]},
+  {n:"Tricep Dip - Bench",cat:"cat6",sub:"Triceps",tag:"Standard",eq:[]},
+  {n:"Face Pull - Cable Rope",cat:"cat6",sub:"Shoulder Accessories",tag:"Signature",eq:["cable"]},
+  {n:"Lateral Raise - Dumbbell",cat:"cat6",sub:"Shoulder Accessories",tag:"Standard",eq:["dumbbell"]},
+  {n:"Lateral Raise - Cable",cat:"cat6",sub:"Shoulder Accessories",tag:"Standard",eq:["cable"]},
+  {n:"Front Raise - Dumbbell",cat:"cat6",sub:"Shoulder Accessories",tag:"Standard",eq:["dumbbell"]},
+  {n:"Rear Delt Flye - Dumbbell",cat:"cat6",sub:"Shoulder Accessories",tag:"Standard",eq:["dumbbell"]},
+  {n:"Y T W - Dumbbell Prone",cat:"cat6",sub:"Shoulder Accessories",tag:"Signature",eq:["dumbbell"]},
+  // cat7 - Core/Anti-Rotation
+  {n:"Pallof Press - Cable Bilateral",cat:"cat7",sub:"Anti-Rotation",tag:"Standard",eq:["cable"]},
+  {n:"Pallof Press - Band",cat:"cat7",sub:"Anti-Rotation",tag:"Standard",eq:["bands"]},
+  {n:"Pallof Press Hold - Isometric",cat:"cat7",sub:"Anti-Rotation",tag:"Signature",eq:["cable"]},
+  {n:"Half-Kneeling Pallof Press",cat:"cat7",sub:"Anti-Rotation",tag:"Signature",eq:[]},
+  {n:"Dead Bug - Standard",cat:"cat7",sub:"Anti-Rotation",tag:"Standard",eq:[]},
+  {n:"Dead Bug - Band",cat:"cat7",sub:"Anti-Rotation",tag:"Signature",eq:["bands"]},
+  {n:"Bird Dog - Standard",cat:"cat7",sub:"Anti-Rotation",tag:"Standard",eq:[]},
+  {n:"Bird Dog - Band Resistance",cat:"cat7",sub:"Anti-Rotation",tag:"Signature",eq:["bands"]},
+  {n:"Suitcase Carry - Dumbbell",cat:"cat7",sub:"Anti-Rotation",tag:"Standard",eq:["dumbbell"]},
+  {n:"Single-Arm Farmers Carry",cat:"cat7",sub:"Anti-Rotation",tag:"Standard",eq:[]},
+  {n:"Single-Arm Overhead Carry - Isometric",cat:"cat7",sub:"Anti-Rotation",tag:"Standard",eq:[]},
+  {n:"Cable Rotation Hold - Isometric",cat:"cat7",sub:"Rotation Holds",tag:"Signature",eq:["cable"]},
+  {n:"Cable Rotation Hold - Split Stance",cat:"cat7",sub:"Rotation Holds",tag:"Signature",eq:["cable"]},
+  {n:"Cable Rotation Hold - Half Kneeling",cat:"cat7",sub:"Rotation Holds",tag:"Signature",eq:["cable"]},
+  {n:"Cable Chop - High to Low - Split Stance",cat:"cat7",sub:"Rotation Holds",tag:"Signature",eq:["cable"]},
+  {n:"Cable Lift - Low to High - Half Kneeling",cat:"cat7",sub:"Rotation Holds",tag:"Signature",eq:["cable"]},
+  {n:"Superman Hold - Isometric",cat:"cat7",sub:"Extension Core",tag:"Standard",eq:[]},
+  {n:"Back Extension - GHD Machine",cat:"cat7",sub:"Extension Core",tag:"Standard",eq:["fullgym"]},
+  {n:"Prone Cobra",cat:"cat7",sub:"Extension Core",tag:"Standard",eq:[]},
+  {n:"Swimmers - Floor",cat:"cat7",sub:"Extension Core",tag:"Standard",eq:[]},
+  {n:"Side Plank - Isometric Hold",cat:"cat7",sub:"Anti-Rotation",tag:"Standard",eq:[]},
+  {n:"Crunch - Standard",cat:"cat7",sub:"Flexion Core",tag:"Standard",eq:[]},
+  {n:"Leg Raise - Hanging",cat:"cat7",sub:"Flexion Core",tag:"Standard",eq:[]},
+  {n:"Leg Raise - Floor",cat:"cat7",sub:"Flexion Core",tag:"Standard",eq:[]},
+  {n:"V-Up",cat:"cat7",sub:"Flexion Core",tag:"Standard",eq:[]},
+  {n:"Ab Rollout - Wheel",cat:"cat7",sub:"Flexion Core",tag:"Standard",eq:[]},
+  {n:"Reverse Crunch",cat:"cat7",sub:"Flexion Core",tag:"Standard",eq:[]},
+  {n:"Bicycle Crunch",cat:"cat7",sub:"Flexion Core",tag:"Standard",eq:[]},
+  // cat8 - Conditioning
+  {n:"Treadmill - Steady State",cat:"cat8",sub:"Cardio Equipment",tag:"Standard",eq:["cardio"]},
+  {n:"Treadmill - Intervals",cat:"cat8",sub:"Cardio Equipment",tag:"Standard",eq:["cardio"]},
+  {n:"Treadmill - Incline Walk",cat:"cat8",sub:"Cardio Equipment",tag:"Standard",eq:["cardio"]},
+  {n:"Bike - Steady State",cat:"cat8",sub:"Cardio Equipment",tag:"Standard",eq:["cardio"]},
+  {n:"Bike - Intervals",cat:"cat8",sub:"Cardio Equipment",tag:"Standard",eq:["cardio"]},
+  {n:"Assault Bike - Intervals",cat:"cat8",sub:"Cardio Equipment",tag:"Standard",eq:["cardio"]},
+  {n:"Rower - Steady State",cat:"cat8",sub:"Cardio Equipment",tag:"Standard",eq:["cardio"]},
+  {n:"Rower - Intervals",cat:"cat8",sub:"Cardio Equipment",tag:"Standard",eq:["cardio"]},
+  {n:"Norwegian 4x4 - Bike",cat:"cat8",sub:"Loaded Conditioning",tag:"Signature",eq:["cardio"]},
+  {n:"Farmer Carry - Heavy",cat:"cat8",sub:"Loaded Conditioning",tag:"Standard",eq:[]},
+  {n:"Kettlebell Swing - Conditioning",cat:"cat8",sub:"Loaded Conditioning",tag:"Standard",eq:["kettlebell"]},
+  // cat10 - Plyometrics
+  {n:"Box Jump - Standard",cat:"cat10",sub:"Bilateral Jumps",tag:"Standard",eq:[]},
+  {n:"Box Jump - Stick Landing",cat:"cat10",sub:"Bilateral Jumps",tag:"Standard",eq:[]},
+  {n:"Depth Jump - Max Rebound",cat:"cat10",sub:"Bilateral Jumps",tag:"Standard",eq:[]},
+  {n:"Broad Jump - Max Distance",cat:"cat10",sub:"Bilateral Jumps",tag:"Standard",eq:[]},
+  {n:"Squat Jump - Continuous",cat:"cat10",sub:"Bilateral Jumps",tag:"Standard",eq:[]},
+  {n:"Pogo Hop - Bilateral",cat:"cat10",sub:"Bilateral Jumps",tag:"Standard",eq:[]},
+  {n:"Single-Leg Box Jump",cat:"cat10",sub:"Unilateral Jumps",tag:"Standard",eq:[]},
+  {n:"Single-Leg Bound",cat:"cat10",sub:"Unilateral Jumps",tag:"Standard",eq:[]},
+  {n:"Lateral Bound - Continuous",cat:"cat10",sub:"Unilateral Jumps",tag:"Standard",eq:[]},
+  {n:"Med Ball Rotational Throw",cat:"cat10",sub:"Rotational Power",tag:"Signature",eq:["medball"]},
+  {n:"Med Ball Slam - Overhead",cat:"cat10",sub:"Rotational Power",tag:"Standard",eq:["medball"]},
+  {n:"Med Ball Side Throw - Wall",cat:"cat10",sub:"Rotational Power",tag:"Signature",eq:["medball"]},
+  // cat11 - Explosive Upper
+  {n:"Explosive Push-Up - Maximum Height",cat:"cat11",sub:"Explosive Upper Body",tag:"Standard",eq:[]},
+  {n:"Plyo Push-Up - Continuous",cat:"cat11",sub:"Explosive Upper Body",tag:"Standard",eq:[]},
+  {n:"Drop Push-Up - Elevated Hands",cat:"cat11",sub:"Explosive Upper Body",tag:"Signature",eq:[]},
+  {n:"Reactive Chest Press - Cable",cat:"cat11",sub:"Explosive Upper Body",tag:"Signature",eq:["cable"]},
+  {n:"Ballistic Row - Cable",cat:"cat11",sub:"Explosive Upper Body",tag:"Signature",eq:["cable"]},
+  // cat12 - Fascial / Warmup
+  {n:"Hip 90/90 Transitions - Continuous",cat:"cat12",sub:"Hip Prep",tag:"Fascial",eq:[]},
+  {n:"Hip CARs - Controlled Articular Rotations",cat:"cat12",sub:"Hip Prep",tag:"Fascial",eq:[]},
+  {n:"Figure-Four Stretch - Loaded Oscillation",cat:"cat12",sub:"Hip Prep",tag:"Fascial",eq:[]},
+  {n:"Hip Circles - Standing Continuous",cat:"cat12",sub:"Hip Prep",tag:"Fascial",eq:[]},
+  {n:"Forward and Back Hip Swing",cat:"cat12",sub:"Hip Prep",tag:"Fascial",eq:[]},
+  {n:"Lateral Lunge - Continuous Fluid",cat:"cat12",sub:"Hip Prep",tag:"Fascial",eq:[]},
+  {n:"Deep Hip Flexor Oscillation",cat:"cat12",sub:"Hip Prep",tag:"Fascial",eq:[]},
+  {n:"Frog Stretch - Continuous",cat:"cat12",sub:"Hip Prep",tag:"Fascial",eq:[]},
+  {n:"Glute Bridge - Continuous Rhythmic",cat:"cat12",sub:"Hip Prep",tag:"Fascial",eq:[]},
+  {n:"Pigeon Pose - Loaded Oscillation",cat:"cat12",sub:"Hip Prep",tag:"Fascial",eq:[]},
+  {n:"Cossack Squat - Continuous",cat:"cat12",sub:"Hip Prep",tag:"Fascial",eq:[]},
+  {n:"Standing Rotation with Reach - Continuous",cat:"cat12",sub:"Rotation Prep",tag:"Fascial",eq:[]},
+  {n:"Hip-Shoulder Separation Drill",cat:"cat12",sub:"Rotation Prep",tag:"Fascial",eq:[]},
+  {n:"Thoracic Rotation - Continuous Standing",cat:"cat12",sub:"Rotation Prep",tag:"Fascial",eq:[]},
+  {n:"Cable Rotation - Controlled to Ballistic",cat:"cat12",sub:"Rotation Prep",tag:"Fascial",eq:["cable"]},
+  {n:"Half Kneeling Rotation - Continuous",cat:"cat12",sub:"Rotation Prep",tag:"Fascial",eq:[]},
+  {n:"Spiral Line Stretch - Standing Reach",cat:"cat12",sub:"Rotation Prep",tag:"Fascial",eq:[]},
+  {n:"Fascial Rebound Rotation - Oscillating",cat:"cat12",sub:"Rotation Prep",tag:"Fascial",eq:[]},
+  {n:"Arm Swings - Bilateral Forward and Back",cat:"cat12",sub:"Upper Body Fascial",tag:"Fascial",eq:[]},
+  {n:"Shoulder Circles - Large Arc",cat:"cat12",sub:"Upper Body Fascial",tag:"Fascial",eq:[]},
+  {n:"Band Pull-Apart - Continuous Rhythmic",cat:"cat12",sub:"Upper Body Fascial",tag:"Fascial",eq:["bands"]},
+  {n:"Pogo Hop - Bilateral Stationary",cat:"cat12",sub:"Lower Body Fascial",tag:"Fascial",eq:[]},
+  {n:"Stiff Leg Jump - Bilateral Continuous",cat:"cat12",sub:"Lower Body Fascial",tag:"Fascial",eq:[]},
+  {n:"Ankle Circles - Seated Continuous",cat:"cat12",sub:"Lower Body Fascial",tag:"Fascial",eq:[]},
+  {n:"Lateral Shuffle - Continuous",cat:"cat12",sub:"Lower Body Fascial",tag:"Fascial",eq:[]},
+  {n:"High Knee Run - Continuous",cat:"cat12",sub:"Lower Body Fascial",tag:"Fascial",eq:[]},
+  {n:"Bounding - Continuous Alternating",cat:"cat12",sub:"Lower Body Fascial",tag:"Fascial",eq:[]}
+];
+
+// ============================================================
+// MOVEMENT PATTERN LAW
+// Every complex contains flexion/extension + rotation or isometric
+// Isometrics always last in a complex
+// ============================================================
+function isIsometric(name){
+  return name.toLowerCase().indexOf('isometric')>-1||name.toLowerCase().indexOf('hold')>-1||
+    name.toLowerCase().indexOf('wall sit')>-1||name.toLowerCase().indexOf('side plank')>-1||
+    name.toLowerCase().indexOf('pallof press hold')>-1||name.toLowerCase().indexOf('carry')>-1;
+}
+function isRotational(name){
+  var nl=name.toLowerCase();
+  return nl.indexOf('rotation')>-1||nl.indexOf('chop')>-1||nl.indexOf('lift')>-1||
+    nl.indexOf('throw')>-1||nl.indexOf('slam')>-1||nl.indexOf('pallof')>-1||nl.indexOf('med ball')>-1;
+}
+function isFlexionExtension(name){
+  var nl=name.toLowerCase();
+  return nl.indexOf('squat')>-1||nl.indexOf('lunge')>-1||nl.indexOf('press')>-1||
+    nl.indexOf('deadlift')>-1||nl.indexOf('rdl')>-1||nl.indexOf('hinge')>-1||
+    nl.indexOf('row')>-1||nl.indexOf('pull')>-1||nl.indexOf('curl')>-1||nl.indexOf('push')>-1;
+}
+function sortComplexByMovementLaw(exercises){
+  // Isometrics always last
+  var nonIso=exercises.filter(function(e){return !isIsometric(e.n||e);});
+  var iso=exercises.filter(function(e){return isIsometric(e.n||e);});
+  return nonIso.concat(iso);
+}
+function validateComplexPattern(exercises){
+  // Check flexion/extension + rotation or isometric present
+  var hasFlexExt=exercises.some(function(e){return isFlexionExtension(e.n||e);});
+  var hasRot=exercises.some(function(e){return isRotational(e.n||e);});
+  var hasIso=exercises.some(function(e){return isIsometric(e.n||e);});
+  return hasFlexExt&&(hasRot||hasIso);
+}
+
+// ============================================================
+// SESSION BUILDER — PAP / French Contrast Engine
+// ============================================================
+function buildBlocks(focus,rs,ta,eq,prefs,sessCount){
+  sessCount=sessCount||1;
+  var phase=getPhase(sessCount);
+  var complexType=getComplexType(sessCount,phase);
+  var effectiveRS=CI_OVERRIDE?9:rs;
+  var noJump=prefs&&prefs.jump==='no';
+  var training=prefs?prefs.training:'currently';
+  var isBeginner=training==='never'||training==='not_recently';
+  var sqPref=prefs?prefs.squat:'goblet';
+  var hingePref=prefs?prefs.hinge:'db';
+  var pullPref=prefs?prefs.pull:'cable';
+  var pain=CI_PAIN||[];
+  var exCount=CI_EX_COUNT||5;
+  var rsHigh=effectiveRS>=8;
+  var rsMid=effectiveRS>=6;
+
+  function eqOk(ex){
+    if(!ex.eq||ex.eq.length===0)return true;
+    return ex.eq.every(function(e){return CI_EQUIP.indexOf(e)>-1;});
+  }
+  var LIB=EX_LIB.filter(eqOk);
+  function pool(cat,sub){
+    return LIB.filter(function(e){return e.cat===cat&&(!sub||e.sub===sub);}).map(function(e){return e.n;});
+  }
+
+  // Pain filters
+  function painFilter(names){
+    return names.filter(function(n){
+      var nl=n.toLowerCase();
+      if(pain.indexOf('lowback')>-1){
+        if(nl.indexOf('conventional barbell deadlift')>-1)return false;
+        if(nl.indexOf('good morning')>-1)return false;
+        if(nl.indexOf('sumo deadlift')>-1)return false;
+        if(nl.indexOf('romanian deadlift - barbell')>-1)return false;
+        if(nl.indexOf('back extension')>-1)return false;
+        if(nl.indexOf('superman')>-1)return false;
+      }
+      if(pain.indexOf('shoulder')>-1||pain.indexOf('neck')>-1){
+        if(nl.indexOf('overhead press')>-1)return false;
+        if(nl.indexOf('upright row')>-1)return false;
+        if(nl.indexOf('push press')>-1)return false;
+        if(nl.indexOf('behind')>-1)return false;
+        if(nl.indexOf('shrug')>-1)return false;
+      }
+      if(pain.indexOf('knee')>-1){
+        if(nl.indexOf('leg extension')>-1)return false;
+        if(nl.indexOf('barbell back squat')>-1)return false;
+        if(nl.indexOf('front squat')>-1)return false;
+        if(nl.indexOf('box squat')>-1)return false;
+        if(nl.indexOf('lunge')>-1&&nl.indexOf('lateral')===-1)return false;
+      }
+      if(pain.indexOf('hip')>-1){
+        if(nl.indexOf('hip thrust')>-1)return false;
+        if(nl.indexOf('bulgarian')>-1)return false;
+      }
+      if(pain.indexOf('elbow')>-1){
+        if(nl.indexOf('curl')>-1)return false;
+        if(nl.indexOf('pushdown')>-1)return false;
+        if(nl.indexOf('skull crusher')>-1)return false;
+        if(nl.indexOf('french press')>-1)return false;
+      }
+      if(pain.indexOf('ankle')>-1){
+        if(nl.indexOf('calf raise')>-1)return false;
+        if(nl.indexOf('jump')>-1)return false;
+        if(nl.indexOf('hop')>-1)return false;
+        if(nl.indexOf('bound')>-1)return false;
+      }
+      return true;
+    });
+  }
+  var jumpBlocked=noJump||isBeginner||pain.indexOf('lowback')>-1||pain.indexOf('knee')>-1||pain.indexOf('hip')>-1||pain.indexOf('ankle')>-1;
+
+  function beginnerFilter(names){
+    if(!isBeginner)return names;
+    return names.filter(function(n){
+      var nl=n.toLowerCase();
+      if(nl.indexOf('barbell')>-1&&nl.indexOf('landmine')===-1)return false;
+      if(nl.indexOf('trap bar')>-1)return false;
+      if(nl.indexOf('clean')>-1)return false;
+      if(nl.indexOf('snatch')>-1)return false;
+      return true;
+    });
+  }
+  function filteredPool(cat,sub){return painFilter(beginnerFilter(pool(cat,sub)));}
+
+  var sets=rsHigh?'4':rsMid?'3':'2';
+  var reps=rsHigh?'5–6':rsMid?'8–10':'12–15';
+  var hingeReps=rsHigh?'4–5':rsMid?'6–8':'10–12';
+
+  // Movement pools
+  var SQUAT_POOL=(function(){
+    if(sqPref==='none')return[];
+    if(isBeginner)return filteredPool('cat1','Squat Pattern').filter(function(n){return n==='Goblet Squat'||n==='Wall Sit - Isometric';});
+    if(sqPref==='barbell')return filteredPool('cat1','Squat Pattern').filter(function(n){return n.indexOf('Barbell')>-1||n==='Front Squat'||n==='Box Squat';});
+    if(sqPref==='split')return filteredPool('cat3','Lunge Variations');
+    return filteredPool('cat1','Squat Pattern').filter(function(n){return n==='Goblet Squat'||n==='Hack Squat - Machine'||n==='Wall Sit - Isometric';});
+  })();
+  var HINGE_POOL=(function(){
+    if(hingePref==='none')return[];
+    if(isBeginner)return filteredPool('cat1','Hinge Pattern').filter(function(n){return n.indexOf('Dumbbell')>-1||n==='Weighted Glute Bridge'||n==='Hip Hinge Hold - Isometric';});
+    if(hingePref==='trap')return filteredPool('cat1','Hinge Pattern').filter(function(n){return n.indexOf('Trap Bar')>-1||n.indexOf('Conventional')>-1||n==='Hip Hinge Hold - Isometric';});
+    if(hingePref==='barbell')return filteredPool('cat1','Hinge Pattern').filter(function(n){return n.indexOf('Barbell')>-1||n==='Hip Hinge Hold - Isometric';});
+    var h=filteredPool('cat1','Hinge Pattern').filter(function(n){return n.indexOf('Dumbbell')>-1||n==='Hip Hinge Hold - Isometric';});
+    h=h.concat(filteredPool('cat3','Single Leg Posterior Chain').filter(function(n){return n.indexOf('RDL')>-1;}));
+    return h;
+  })();
+  var PULL_POOL=(function(){
+    if(pullPref==='pullup')return filteredPool('cat4','Vertical Pull').concat(filteredPool('cat2','Horizontal Pull'));
+    if(pullPref==='db')return filteredPool('cat2','Horizontal Pull').filter(function(n){return n.indexOf('Dumbbell')>-1;});
+    if(pullPref==='machine')return filteredPool('cat2','Horizontal Pull').filter(function(n){return n.indexOf('Machine')>-1||n.indexOf('Cable')>-1;});
+    return filteredPool('cat2','Horizontal Pull').filter(function(n){return n.indexOf('Cable')>-1;}).concat(filteredPool('cat4','Vertical Pull').filter(function(n){return n.indexOf('Cable')>-1;}));
+  })();
+  var PUSH_POOL=filteredPool('cat2','Horizontal Push').filter(function(n){
+    if(isBeginner)return n.indexOf('Push-Up')>-1||n.indexOf('Dumbbell Bench')>-1;
+    return true;
+  });
+  var ROT_POOL=(function(){
+    var r=filteredPool('cat7','Rotation Holds');
+    r=r.concat(pool('cat12','Rotation Prep').filter(function(n){return n.indexOf('Cable')>-1||n.indexOf('Hip-Shoulder')>-1||n.indexOf('Standing Rotation')>-1||n.indexOf('Separation')>-1;}));
+    return r.filter(function(n,i,a){return a.indexOf(n)===i;});
+  })();
+  var CORE_POOL=filteredPool('cat7','Anti-Rotation').concat(filteredPool('cat7','Extension Core')).concat(filteredPool('cat7','Flexion Core'));
+  var PLYO_POOL=jumpBlocked?[]:filteredPool('cat10','Bilateral Jumps').concat(filteredPool('cat10','Rotational Power'));
+  var EXPLO_UPPER_POOL=filteredPool('cat11','Explosive Upper Body');
+  var COND_POOL=(function(){
+    if(isBeginner||!rsMid)return pool('cat8','Cardio Equipment').filter(function(n){return n.indexOf('Steady State')>-1||n.indexOf('Incline Walk')>-1;});
+    return pool('cat8','Cardio Equipment').concat(pool('cat8','Loaded Conditioning'));
+  })();
+  var FASCIAL_HIP_POOL=pool('cat12','Hip Prep');
+  var FASCIAL_ROT_POOL=pool('cat12','Rotation Prep');
+  var ISO_POOL=filteredPool('cat7','Anti-Rotation').filter(isIsometric).concat(['Hip Hinge Hold - Isometric','Wall Sit - Isometric','Single-Arm Overhead Carry - Isometric','Pallof Press Hold - Isometric','Side Plank - Isometric Hold','Superman Hold - Isometric']);
+
+  // Pain subs
+  var PAIN_SUBS=[];
+  if(pain.indexOf('lowback')>-1||pain.indexOf('hip')>-1){PAIN_SUBS=PAIN_SUBS.concat(['Dead Bug - Standard','Bird Dog - Standard','Glute Bridge - Continuous Rhythmic','Hip 90/90 Transitions - Continuous','Deep Hip Flexor Oscillation']);}
+  if(pain.indexOf('shoulder')>-1||pain.indexOf('neck')>-1){PAIN_SUBS=PAIN_SUBS.concat(['Face Pull - Cable Rope','Band Pull-Apart - Continuous Rhythmic','Y T W - Dumbbell Prone','Rear Delt Flye - Dumbbell']);}
+  if(pain.indexOf('knee')>-1){PAIN_SUBS=PAIN_SUBS.concat(['Terminal Knee Extension - Band','Wall Sit - Isometric']);}
+  if(pain.indexOf('ankle')>-1){PAIN_SUBS=PAIN_SUBS.concat(['Ankle Circles - Seated Continuous']);}
+
+  function pickEx(p,n){
+    if(!p||!p.length)return[];
+    var fresh=p.filter(function(e){return CI_USED.indexOf(e)===-1;});
+    if(fresh.length<n)fresh=p.slice();
+    var picks=[],avail=fresh.slice();
+    for(var i=0;i<n&&avail.length;i++){var idx=Math.floor(Math.random()*avail.length);picks.push(avail.splice(idx,1)[0]);}
+    picks.forEach(function(e){if(CI_USED.indexOf(e)===-1)CI_USED.push(e);});
+    if(CI_USED.length>50)CI_USED.splice(0,25);
+    return picks;
+  }
+  function exRow(id,name,s,r,cue,isIso){
+    return{id:id,n:name,s:s,r:r,c:cue||'Controlled tempo. Full range of motion.',iso:isIso||isIsometric(name)};
+  }
+
+  var blocks=[];
+
+  // BLOOD FLOW PROTOCOL — readiness 1-2
+  if(!CI_OVERRIDE&&rs<=2){
+    blocks.push({title:'Blood Flow Protocol',time:'20 min',type:'bfp',exs:[
+      exRow('BF1','Goblet Squat','1','20','Bodyweight or very light. Full depth.'),
+      exRow('BF2','Standing Rotation with Reach - Continuous','1','10 ea','Full reach. Open through the thoracic.'),
+      exRow('BF3','Hip 90/90 Transitions - Continuous','1','10 ea','Fluid. No forcing.'),
+      exRow('BF4','Arm Swings - Bilateral Forward and Back','1','20','Loose and rhythmic.'),
+      exRow('BF5','Hip Circles - Standing Continuous','1','10 ea','Full circle.'),
+      exRow('BF6','Dead Bug - Standard','1','8 ea','Core activation. Breathe.',true)
+    ]});
+    return blocks;
+  }
+
+  // WARM-UP — 10 min, fascial always
+  var fascWU=[];
+  if(focus.indexOf('golf')>-1){fascWU=pickEx(FASCIAL_ROT_POOL,2).map(function(n,i){return exRow('FW'+i,n,'1','8 ea','Fluid. Prepare the spiral line.');});}
+  else{fascWU=pickEx(FASCIAL_HIP_POOL,2).map(function(n,i){return exRow('FW'+i,n,'1','8 ea','Fluid and continuous.');});}
+  if(pain.indexOf('lowback')>-1||pain.indexOf('hip')>-1){
+    var hipPF=FASCIAL_HIP_POOL.filter(function(n){return n.indexOf('90/90')>-1||n.indexOf('Figure-Four')>-1||n.indexOf('Deep Hip')>-1;});
+    fascWU=fascWU.concat(pickEx(hipPF,2).map(function(n,i){return exRow('PF'+i,n,'2','8 ea','Pain modification. Hip prep priority.');}));
+  }
+  var wuExs=[
+    exRow('W1','Foam Roll - Full Body','1','45s ea','T-spine, glutes, lats. Non-negotiable.'),
+    exRow('W2','T-Spine Rotation - Kneeling','2','10 ea','Open before any loading.'),
+    exRow('W3','Walking Lunge with Rotation','1','10 ea','Progressive range.')
+  ];
+  wuExs=wuExs.concat(fascWU.slice(0,2));
+  if(!jumpBlocked&&rsHigh)wuExs.push(exRow('W6','Pogo Hop - Bilateral','2','6','NS priming. Light and fast.'));
+  blocks.push({title:'Warm-Up',time:'10 min',type:'warmup',exs:wuExs});
+
+  // DELOAD SESSION
+  if(complexType==='deload'){
+    var dlExs=[];
+    if(focus.indexOf('golf')>-1){
+      dlExs=pickEx(ROT_POOL,2).map(function(n,i){return exRow('D'+i,n,'2','8 ea','Deload — 50% intensity. Movement quality only.');});
+    }
+    dlExs=dlExs.concat(pickEx(CORE_POOL,2).map(function(n,i){return exRow('DC'+i,n,'2','10 ea','Deload. Perfect form.');}));
+    if(PAIN_SUBS.length)dlExs=dlExs.concat(pickEx(PAIN_SUBS,1).map(function(n,i){return exRow('DP'+i,n,'2','10 ea','Pain management. Light.');}));
+    blocks.push({title:'Deload Session',time:'~25 min',type:'deload',exs:dlExs,note:'Deload week. Session '+sessCount+'. Volume and intensity reduced 50%. This is not a rest day — quality movement is still training.'});
+    return blocks;
+  }
+
+  // MAIN SESSION — French Contrast / PAP Engine
+  var mainExs=[];
+
+  // MOVEMENT PATTERN LAW: complex must contain flexion/extension + rotation or isometric
+  // Build complexes based on phase and cycle position
+
+  if(complexType==='pap_basic'||complexType==='pap'){
+    // PAP Pair: Strength + Plyometric or Strength + Explosive
+    var papComplexes=[];
+    if(focus.indexOf('golf')>-1||focus.indexOf('strength')>-1){
+      // Pair 1: Heavy strength + explosive
+      var str1=pickEx(SQUAT_POOL.length?SQUAT_POOL:HINGE_POOL,1);
+      var explo1=jumpBlocked?[]:pickEx(PLYO_POOL,1);
+      var iso1=pickEx(ISO_POOL,1);
+      var c1=[str1[0],explo1[0]||iso1[0],iso1[0]].filter(Boolean).slice(0,3);
+      if(c1.length>=2){
+        var sorted=sortComplexByMovementLaw(c1.map(function(n){return{n:n};}));
+        papComplexes.push({label:'PAP Pair A',type:'pap',exs:sorted.map(function(e,i){return exRow('PA'+(i+1),e.n,sets,i===0?reps:i===1?(rsHigh?3+' reps':'5 reps'):rsHigh?'30s':'20s',i===0?'Heavy. Maximum neural demand. 3 min after.':i===1?'Maximum intent. Rest 2 min after.':'Isometric. Full tension. No rest.');})});
+      }
+      // Pair 2: Hinge + rotational
+      if(exCount>=5){
+        var str2=pickEx(HINGE_POOL,1);
+        var rot1=pickEx(ROT_POOL,1);
+        var iso2=pickEx(ISO_POOL.filter(function(n){return n!==iso1[0];}),1);
+        var c2=[str2[0],rot1[0],iso2[0]].filter(Boolean);
+        var sorted2=sortComplexByMovementLaw(c2.map(function(n){return{n:n};}));
+        papComplexes.push({label:'PAP Pair B',type:'pap',exs:sorted2.map(function(e,i){return exRow('PB'+(i+1),e.n,sets,i===0?hingeReps:i===1?'8 ea':'25s',i===0?'Hip-dominant. Full range.':i===1?'Rotation drives power. Max intent.':'Isometric. Full tension.');})});
+      }
+    }
+    papComplexes.forEach(function(c){if(c.exs&&c.exs.length)blocks.push({title:c.label,time:'~'+(c.exs.length*4)+' min',type:c.type,exs:c.exs});});
+
+  }else if(complexType==='triset'){
+    // Tri-set: Strength + Power + Rotational
+    var triSets=[];
+    var s1=pickEx(SQUAT_POOL.length?SQUAT_POOL:HINGE_POOL,1);
+    var p1=jumpBlocked?pickEx(EXPLO_UPPER_POOL,1):pickEx(PLYO_POOL,1);
+    var r1=pickEx(ROT_POOL,1);
+    var iso3=pickEx(ISO_POOL,1);
+    var c3=[s1[0],p1[0],r1[0],iso3[0]].filter(Boolean).slice(0,4);
+    var sorted3=sortComplexByMovementLaw(c3.map(function(n){return{n:n};}));
+    triSets.push({label:'Tri-Set A',type:'triset',exs:sorted3.map(function(e,i){
+      var cues=['Heavy. Maximum neural demand.','Explosive. Full extension.','Rotation drives power.','Isometric. Full tension. End of complex.'];
+      var repsArr=[rsHigh?'4–5':rsMid?'6–8':'10',rsHigh?'3':'5',rsHigh?'8 ea':'10 ea',rsHigh?'30s':'20s'];
+      return exRow('TA'+(i+1),e.n,sets,repsArr[i]||reps,cues[i]||'Full range.');
+    })});
+    if(exCount>=6){
+      var s2=pickEx(HINGE_POOL,1);
+      var p2=pickEx(EXPLO_UPPER_POOL,1);
+      var r2=pickEx(ROT_POOL,1);
+      var c4=[s2[0],p2[0],r2[0]].filter(Boolean);
+      var sorted4=sortComplexByMovementLaw(c4.map(function(n){return{n:n};}));
+      triSets.push({label:'Tri-Set B',type:'triset',exs:sorted4.map(function(e,i){
+        return exRow('TB'+(i+1),e.n,sets,i===0?hingeReps:i===1?'3':'8 ea',i===0?'Hip hinge. Neutral spine.':i===1?'Explosive. Max height.':'Rotation. Max speed.');
+      })});
+    }
+    triSets.forEach(function(c){if(c.exs&&c.exs.length)blocks.push({title:c.label,time:'~'+(c.exs.length*5)+' min',type:c.type,exs:c.exs});});
+
+  }else if(complexType==='french_contrast'||complexType==='overload'){
+    // Full French Contrast: Heavy Strength → Plyometric → Loaded Jump/Explosive → Accelerative Plyometric
+    // Movement law: flexion/extension (heavy) + plyometric + rotational + isometric
+    var fcLabel=complexType==='overload'?'Overload Complex':'French Contrast Complex';
+    var heavyStr=pickEx(SQUAT_POOL.length?SQUAT_POOL:HINGE_POOL,1);
+    var plyoFC=jumpBlocked?pickEx(EXPLO_UPPER_POOL,1):pickEx(PLYO_POOL,1);
+    var loadedJump=jumpBlocked?pickEx(ROT_POOL,1):(pickEx(PLYO_POOL.filter(function(n){return n!==plyoFC[0];}),1).length?pickEx(PLYO_POOL.filter(function(n){return n!==plyoFC[0];}),1):pickEx(ROT_POOL,1));
+    var accelPlyo=pickEx(ROT_POOL.concat(jumpBlocked?[]:PLYO_POOL).filter(function(n){return n!==loadedJump[0]&&n!==plyoFC[0];}),1);
+    var isoFC=pickEx(ISO_POOL,1);
+    var fcExs=[heavyStr[0],plyoFC[0],loadedJump[0],accelPlyo[0],isoFC[0]].filter(Boolean);
+    var sortedFC=sortComplexByMovementLaw(fcExs.map(function(n){return{n:n};}));
+    var fcCues=['Heavy compound. Maximum neural drive. 3–4 min after.','Explosive plyometric. Max height/distance.','Loaded accelerative movement. Transfer of force.','Accelerative. Max velocity.','Isometric. End of complex. Full tension.'];
+    var fcReps=[rsHigh?'3–4':rsMid?'4–5':'5',rsHigh?'3':'4','3–5',rsHigh?'4':'5',rsHigh?'30s':'20s'];
+    blocks.push({title:fcLabel,time:'~20 min',type:'french_contrast',exs:sortedFC.map(function(e,i){return exRow('FC'+(i+1),e.n,'4',fcReps[i]||reps,fcCues[i]||'Full range.');})});
+
+    // Second complex if time allows
+    if(ta>=45&&exCount>=6){
+      var heavy2=pickEx(HINGE_POOL,1);
+      var push2=pickEx(PUSH_POOL,1);
+      var expUpper=pickEx(EXPLO_UPPER_POOL,1);
+      var rot2=pickEx(ROT_POOL,1);
+      var isoFC2=pickEx(ISO_POOL.filter(function(n){return n!==isoFC[0];}),1);
+      var c2B=[heavy2[0],push2[0],expUpper[0],rot2[0],isoFC2[0]].filter(Boolean);
+      var sorted2B=sortComplexByMovementLaw(c2B.map(function(n){return{n:n};}));
+      blocks.push({title:complexType==='overload'?'Overload Complex B':'French Contrast Complex B',time:'~18 min',type:'french_contrast',exs:sorted2B.map(function(e,i){return exRow('FB'+(i+1),e.n,'3',fcReps[i]||reps,fcCues[i]||'Full range.');})});
+    }
+  }
+
+  // Accessory/strength block for pure strength or fat loss focus
+  if(focus.indexOf('strength')>-1&&complexType==='pap_basic'){
+    var strExs=[];
+    var sq=pickEx(SQUAT_POOL,1);if(sq.length)strExs.push(exRow('S1',sq[0],sets,reps,'Controlled eccentric. Full range.'));
+    var hi=pickEx(HINGE_POOL,1);if(hi.length)strExs.push(exRow('S2',hi[0],sets,hingeReps,'Hip hinge. Neutral spine.'));
+    var pu=pickEx(PUSH_POOL,1);if(pu.length)strExs.push(exRow('S3',pu[0],sets,reps,'Control the eccentric.'));
+    var pl=pickEx(PULL_POOL,1);if(pl.length)strExs.push(exRow('S4',pl[0],sets,reps,'Full range.'));
+    var isoS=pickEx(ISO_POOL,1);if(isoS.length)strExs.push(exRow('S5',isoS[0],sets,rsHigh?'30s':'20s','Isometric. Last in sequence. Full tension.',true));
+    if(strExs.length)blocks.push({title:'Strength Block',time:'~20 min',type:'std',exs:strExs});
+  }
+
+  if(focus.indexOf('fatloss')>-1){
+    var flPool=SQUAT_POOL.concat(PULL_POOL).concat(PUSH_POOL);
+    var flExs=pickEx(flPool,Math.min(exCount,4)).map(function(n,i){return exRow('FL'+i,n,'4','45s','Continuous. 45s work, 15s rest.');});
+    var cond=pickEx(COND_POOL,1);
+    if(cond.length)flExs.push(exRow('FC',cond[0],'4','4 min','85–90% max HR. 3 min easy between.'));
+    if(flExs.length)blocks.push({title:'Conditioning Block',time:'~'+(flExs.length*5)+' min',type:'std',exs:flExs});
+  }
+
+  if(focus.indexOf('recovery')>-1){
+    var recExs=pickEx(FASCIAL_HIP_POOL,3).map(function(n,i){return exRow('RH'+i,n,'2','8 ea','Fluid. No forcing.');});
+    recExs=recExs.concat(pickEx(FASCIAL_ROT_POOL,2).map(function(n,i){return exRow('RR'+i,n,'2','8 ea','Full range.');}));
+    recExs.push(exRow('RV','Box Breathing','1','6 cycles','4 in, 4 hold, 4 out, 4 hold.',true));
+    blocks.push({title:'Recovery Block',time:'~25 min',type:'std',exs:recExs});
+  }
+
+  // Pain subs at end
+  if(PAIN_SUBS.length&&pain.length){
+    var subs=pickEx(PAIN_SUBS,Math.min(2,PAIN_SUBS.length));
+    subs.forEach(function(n,i){mainExs.push(exRow('PS'+i,n,'2','10–12','Pain modification. Quality only.'));});
+    if(mainExs.length)blocks.push({title:'Injury Management',time:'8 min',type:'std',exs:mainExs});
+  }
+
+  if(blocks.length<=1){
+    blocks.push({title:'Movement Session',time:'20 min',type:'std',exs:[
+      exRow('A1','Hip 90/90 Transitions - Continuous','2','10 ea','Non-negotiable.'),
+      exRow('A2','Dead Bug - Standard','2','8 ea','Core stability.',true)
+    ]});
+  }
+  return blocks;
+}
+
+// ============================================================
+// SESSION LABEL
+// ============================================================
+function getSessionLabel(focus,rs,sessCount){
+  sessCount=sessCount||1;
+  var phase=getPhase(sessCount);
+  var complexType=getComplexType(sessCount,phase);
+  if(complexType==='deload')return{l:'Deload Session',note:'"Deload is not a rest day. It is strategic recovery. Show up, move well, go home."'};
+  if(rs<=2)return{l:'Blood Flow Protocol',note:'"Your body is asking for recovery today. Blood flow is the highest ROI session right now."'};
+  var typeLabel={french_contrast:'French Contrast',pap:'PAP',triset:'Tri-Set',overload:'Overload',pap_basic:'Foundation'}[complexType]||'Training';
+  if(focus.length===4)return{l:'Full Program — '+typeLabel+' Block',note:'"All four focus areas. Execute the warm-up completely."'};
+  if(focus.indexOf('golf')>-1&&focus.indexOf('strength')>-1)return{l:'Golf + Strength — '+typeLabel,note:'"Rotation and strength combined."'};
+  if(focus.indexOf('golf')>-1)return{l:rs<=5?'Modified Golf Session':'Golf Performance — '+typeLabel,note:rs<=5?'"Modified today. Warm-up and rotation only."':'"Good energy. Complete the rotation ladder before loading."'};
+  if(focus.indexOf('strength')>-1)return{l:rs<=5?'Modified Strength Session':'Strength — '+typeLabel,note:rs<=5?'"Modified. Pattern and technique over weight."':'"Strength day. Form over weight always."'};
+  if(focus.indexOf('fatloss')>-1)return{l:'Conditioning Session',note:'"High output day. Circuits and conditioning."'};
+  if(focus.indexOf('recovery')>-1)return{l:'Recovery Session',note:'"Recovery is training. This session matters."'};
+  return{l:'Training Session — '+typeLabel,note:'"Show up. Do the work."'};
+}
+
+// ============================================================
+// READINESS / OVERRIDE
+// ============================================================
+var PAIN_INFO={
+  neck:{h:'Neck flagged',b:'<b>Removed:</b> barbell shrugs, heavy overhead, behind-neck press.<br><b>Modified:</b> all pressing lighter. No load above ear height.'},
+  shoulder:{h:'Shoulder flagged',b:'<b>Removed:</b> overhead press, upright rows, behind-neck movements.<br><b>Added:</b> face pulls, band pull-aparts, Y-T-W rear delt work.'},
+  upperback:{h:'Upper back flagged',b:'<b>Removed:</b> heavy barbell rows, weighted pull-ups.<br><b>Added:</b> thoracic mobility, band pull-aparts, light cable rows.'},
+  lowback:{h:'Low back flagged',b:'<b>Removed:</b> conventional deadlifts, good mornings, heavy hinging.<br><b>Added:</b> dead bugs, bird dogs, glute bridges, hip 90/90.'},
+  hip:{h:'Hip flagged',b:'<b>Removed:</b> heavy squats, hip thrusts, single-leg loading.<br><b>Added:</b> hip 90/90, figure-four stretch, side-lying abduction.'},
+  knee:{h:'Knee flagged',b:'<b>Removed:</b> leg extensions, deep squats, lunges.<br><b>Added:</b> terminal knee extensions, wall sits, hip-dominant hinging.'},
+  elbow:{h:'Elbow flagged',b:'<b>Removed:</b> curls, tricep pushdowns, skull crushers.<br><b>Modified:</b> neutral grip only on all pulling.'},
+  ankle:{h:'Ankle flagged',b:'<b>Removed:</b> all jumping and plyometrics, calf raises.<br><b>Added:</b> seated ankle circles, single-leg balance.'}
+};
+function togPain(id){
+  var idx=CI_PAIN.indexOf(id);
+  if(idx>-1){CI_PAIN.splice(idx,1);document.getElementById('pc-'+id).classList.remove('sel');}
+  else{CI_PAIN.push(id);document.getElementById('pc-'+id).classList.add('sel');}
+  var last=CI_PAIN.length?CI_PAIN[CI_PAIN.length-1]:null;
+  var box=document.getElementById('pain-info');
+  if(last&&PAIN_INFO[last]){
+    document.getElementById('pain-info-head').textContent=PAIN_INFO[last].h;
+    document.getElementById('pain-info-body').innerHTML=PAIN_INFO[last].b;
+    box.classList.add('vis');
+  }else{box.classList.remove('vis');}
+}
+function ciScore(v){
+  CI_RS=parseInt(v);
+  var c={1:'#FF4444',2:'#FF4444',3:'#FF6B35',4:'#FF6B35',5:'#FF8C00',6:'#00C7B4',7:'#00C7B4',8:'#00E5D0',9:'#00E5D0',10:'#00E5D0'};
+  document.getElementById('ci-score-disp').innerHTML=v+'<span>/10</span>';
+  document.getElementById('ci-score-disp').style.color=c[v]||'var(--teal)';
+  var ob=document.getElementById('override-bar');
+  if(ob)ob.style.display=CI_RS<=2?'flex':'none';
+}
+function ciTime(btn,m){CI_TA=m;document.querySelectorAll('.tbtn').forEach(function(b){b.className='tbtn';});btn.className='tbtn on';}
+function togEquip(card,val){
+  var i=CI_EQUIP.indexOf(val);
+  if(i>-1&&CI_EQUIP.length>1){CI_EQUIP.splice(i,1);card.className='equip-card';}
+  else if(i===-1){CI_EQUIP.push(val);card.className='equip-card sel';}
+}
+function togFocus(card,val){
+  var i=CI_FOCUS.indexOf(val);
+  if(i>-1&&CI_FOCUS.length>1){CI_FOCUS.splice(i,1);card.className='focus-card';}
+  else if(i===-1){CI_FOCUS.push(val);card.className='focus-card sel';}
+}
+function showOverrideConfirm(){document.getElementById('override-confirm').classList.add('vis');}
+function cancelOverride(){document.getElementById('override-confirm').classList.remove('vis');}
+function confirmOverride(){CI_OVERRIDE=true;document.getElementById('override-bar').style.display='none';document.getElementById('override-confirm').classList.remove('vis');}
+function ciExCount(btn,n){CI_EX_COUNT=n;document.querySelectorAll('#ex-count-btns .selbtn').forEach(function(b){b.className='selbtn';});btn.className='selbtn on';updateEstTime();}
+function ciRest(btn,s){CI_REST=s;document.querySelectorAll('#rest-btns .selbtn').forEach(function(b){b.className='selbtn';});btn.className='selbtn on';updateEstTime();}
+function updateEstTime(){var warmup=10;var exTime=Math.ceil((CI_EX_COUNT*3*(45+CI_REST))/60);var el=document.getElementById('est-time');if(el)el.innerHTML='Estimated session: <strong>~'+(warmup+exTime)+' min</strong> including warm-up';}
+
+// ============================================================
+// SESSION GENERATION
+// ============================================================
+function generateSession(){
+  if(!AD)return;
+  if(CI_RS<=3)CI_FOCUS=['recovery'];
+  var sessCount=(AD.sessionCount||0)+1;
+  var phase=getPhase(sessCount);
+  var phaseData=PHASES[phase];
+  var info=getSessionLabel(CI_FOCUS,CI_RS,sessCount);
+  var blocks=buildBlocks(CI_FOCUS,CI_RS,CI_TA,CI_EQUIP,AD.prefs||null,sessCount);
+  var focusStr=CI_FOCUS.map(function(f){return{golf:'Golf',strength:'Strength',fatloss:'Fat Loss',recovery:'Recovery'}[f]||f;}).join(' + ');
+  var dateStr=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+
+  document.getElementById('sess-eyebrow').textContent=dateStr;
+  document.getElementById('sess-title').textContent=(AD?AD.meta.name+' — ':'')+info.l;
+  var painStr=CI_PAIN.length?' · Pain: '+CI_PAIN.join(', '):'';
+  var restStr=' · Rest: '+(CI_REST>=60?(CI_REST/60)+'min':CI_REST+'s');
+  document.getElementById('sess-meta').textContent='Readiness '+(CI_OVERRIDE?CI_RS+'/10 (override)':CI_RS+'/10')+restStr+' · '+focusStr+painStr;
+
+  // Phase badge
+  var complexType=getComplexType(sessCount,phase);
+  var complexLabel={pap_basic:'Foundation PAP',pap:'PAP Pair',triset:'Tri-Set',french_contrast:'French Contrast',overload:'Overload',deload:'Deload'}[complexType]||'Standard';
+  document.getElementById('sess-phase-badge').innerHTML='<div class="phase-badge"><span class="phase-badge-label">Phase</span><span class="phase-badge-name">'+phaseData.name+'</span><span class="phase-badge-sub">Session '+sessCount+' · '+complexLabel+'</span></div>';
+
+  var html='<div class="sess-note">'+info.note+'</div>';
+
+  // Modifier banners
+  if(AD.prefs&&AD.prefs.jump==='no'){html+='<div style="margin-bottom:14px;padding:11px 14px;background:var(--danger-dim);border:1px solid rgba(255,68,68,0.2);border-radius:8px;font-size:12px;color:var(--danger);line-height:1.5;">No-impact preference active. All jumping exercises replaced.</div>';}
+  if(AD.prefs&&(AD.prefs.training==='never'||AD.prefs.training==='not_recently')){html+='<div style="margin-bottom:14px;padding:11px 14px;background:var(--orange-dim);border:1px solid rgba(255,107,53,0.2);border-radius:8px;font-size:12px;color:var(--orange);line-height:1.5;">Session adapted for training history. Conservative loading. Pattern mastery first.</div>';}
+
+  var typeColors={warmup:'var(--border)',bfp:'rgba(107,140,255,0.3)',pap:'rgba(0,199,180,0.3)',triset:'rgba(255,107,53,0.3)',french_contrast:'linear-gradient(135deg,rgba(0,199,180,0.3),rgba(255,107,53,0.3))',overload:'rgba(255,107,53,0.4)',deload:'rgba(107,140,255,0.2)',std:'var(--border)'};
+  var typeTags={pap:'PAP Complex',triset:'Tri-Set',french_contrast:'French Contrast',overload:'Overload Complex',deload:'Deload',bfp:'Blood Flow',warmup:'Warm-Up',std:'Block'};
+  var typeTagClass={pap:'sc-type-pap',triset:'sc-type-tri',french_contrast:'sc-type-fc',overload:'sc-type-tri',deload:'sc-type-std',bfp:'sc-type-std',warmup:'sc-type-std',std:'sc-type-std'};
+
+  blocks.forEach(function(b,bi){
+    if(!b.exs||!b.exs.length)return;
+    var btype=b.type||'std';
+    var tagLabel=typeTags[btype]||'Block';
+    var tagClass=typeTagClass[btype]||'sc-type-std';
+    html+='<div class="sess-complex">';
+    html+='<div class="sc-header"><div class="sc-num">'+(bi+1)+'</div><div class="sc-title">'+b.title+'</div><span class="sc-type-tag '+tagClass+'">'+tagLabel+'</span><div class="sc-time">'+b.time+'</div></div>';
+    if(b.note)html+='<div style="padding:10px 18px;background:var(--orange-dim);border-bottom:1px solid var(--border);font-size:11px;color:var(--orange);line-height:1.5;">'+b.note+'</div>';
+    html+='<div class="sc-exercises">';
+    b.exs.forEach(function(e){
+      var isoClass=e.iso?' ex-isometric':'';
+      var isoBadge=e.iso?'<div><span class="iso-badge">Isometric</span></div>':'';
+      html+='<div class="ex-row'+isoClass+'"><div class="ex-id">'+e.id+'</div><div class="ex-nc"><div class="ex-n">'+e.n+'</div><div class="ex-c">'+e.c+'</div>'+isoBadge+'</div><div class="ex-sc"><div class="ex-val">'+(e.s||'3')+'</div><div class="ex-lbl">Sets</div></div><div class="ex-rc"><div class="ex-val">'+(e.r||'10')+'</div><div class="ex-lbl">Reps</div></div></div>';
+    });
+    html+='</div></div>';
+  });
+
+  // Movement pattern law reminder
+  html+='<div style="margin-top:16px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:11px;color:var(--muted);line-height:1.6;"><strong style="color:var(--teal)">Movement Law:</strong> Every complex contains flexion/extension + rotation or isometric hold. Isometric exercises are always performed last in their complex.</div>';
+
+  document.getElementById('sess-out').innerHTML=html;
+
+  // Save session to history
+  var histEntry={date:new Date().toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}),name:info.l,readiness:CI_RS,focus:CI_FOCUS.join('+'),sessNum:sessCount,phase:phaseData.name,complexType:complexType};
+  if(!AD._demo){
+    saveSessionHistory(AD.meta.name,histEntry);
+    // Update session count
+    AD.sessionCount=sessCount;
+    saveProfile(AD);
+    // Monthly report
+    var mr=getMonthlyReport();
+    var thisMonth=new Date().getMonth();
+    if(mr.month!==thisMonth){mr={sessions:0,month:thisMonth};}
+    mr.sessions++;
+    saveMonthlyReport(mr);
+  }
+
+  // Session history display (last 5 for member)
+  var hist=getSessionHistory(AD.meta.name);
+  var histHtml='';
+  if(hist.length>0){
+    histHtml='<div class="history-section"><div class="history-title">Recent Sessions</div>';
+    hist.slice(0,5).forEach(function(h){
+      histHtml+='<div class="history-item"><div class="hi-date">'+h.date+'</div><div class="hi-name">'+h.name+'</div><div class="hi-sess">Session '+h.sessNum+' · '+h.phase+'</div></div>';
+    });
+    histHtml+='</div>';
+  }
+  document.getElementById('sess-history').innerHTML=histHtml;
+
+  go('session');
+}
+
+// ============================================================
+// QUESTIONNAIRE LOGIC
+// ============================================================
+function pick(el,gid){document.getElementById(gid).querySelectorAll('.choice').forEach(function(c){c.className='choice';});el.className='choice sel';}
+function pickPref(el,gid,val){var g=document.getElementById(gid);if(g)g.querySelectorAll('.pref-card').forEach(function(c){c.className='pref-card';});if(gid==='qstyle')PREF_STYLE=val;el.className='pref-card sel';}
+function tog(el){el.className=el.className.indexOf('sel')>-1?'chip':'chip sel';}
+function nxt(f){document.getElementById('qs'+f).className='q-sec';var n=f+1;if(n<=7){document.getElementById('qs'+n).className='q-sec vis';updProg(n);}window.scrollTo(0,0);}
+function prv(f){document.getElementById('qs'+f).className='q-sec';var p=f-1;if(p>=1){document.getElementById('qs'+p).className='q-sec vis';updProg(p);}window.scrollTo(0,0);}
+function updProg(n){document.getElementById('q-prog').style.width=((n/7)*100)+'%';document.getElementById('q-step').textContent='Section '+n+' of 7';document.getElementById('q-sname').textContent=SNAMES[n]||'';}
+function gPick(id){var el=document.getElementById(id);if(!el)return'';var s=el.querySelector('.sel');return s?s.querySelector('.ctxt')?s.querySelector('.ctxt').textContent:'':'';}
+function gChips(id){var el=document.getElementById(id);if(!el)return[];return Array.from(el.querySelectorAll('.sel')).map(function(c){return c.textContent.trim();});}
+
+function scoreAll(f){
+  var painScore={none:0,mild:2,moderate:5,significant:8}[f.pain.split(' ')[0].toLowerCase()]||0;
+  var A=Math.min(10,(f.mob.indexOf('stiff')>-1?4:0)+(f.mob.indexOf('Quite')>-1?2:0)+(f.hip.indexOf('Limited')>-1?3:0)+(f.hip.indexOf('compensate')>-1?2:0)+(f.thor.indexOf('Limited')>-1?2:0));
+  var B=Math.min(10,painScore+(f.locs&&f.locs.length>0?1:0)+(f.surg&&f.surg.indexOf('Yes')>-1?2:0));
+  var C=Math.min(10,(f.ex.indexOf('Rarely')>-1?4:f.ex.indexOf('1–2')>-1||f.ex.indexOf('1-2')>-1?2:f.ex.indexOf('5+')>-1?-1:0)+(f.energy.indexOf('Low')>-1?3:f.energy.indexOf('fade')>-1?2:0));
+  var D=Math.min(10,(f.hcp==='scratch'||f.hcp==='Scratch to 5'?2:f.hcp==='mid'||f.hcp==='6 to 15'?1:0)+(f.goal.indexOf('distance')>-1||f.goal.indexOf('Distance')>-1?3:f.goal.indexOf('consistency')>-1?2:0)+((f.hip.indexOf('Limited')>-1||f.hip.indexOf('compensate')>-1)?2:0));
+  var E=Math.min(10,(f.energy.indexOf('Low')>-1?4:f.energy.indexOf('fade')>-1?2:0)+(f.surg&&f.surg.indexOf('Yes')>-1?1:0));
+  var F=Math.min(10,(f.ex.indexOf('Rarely')>-1?3:0)+(f.trav&&f.trav.indexOf('Heavy')>-1?5:0));
+  return{A:A,B:B,C:C,D:D,E:E,F:F};
+}
+function assignTier(sc,f){
+  if(sc.B>=7&&(f.locs.indexOf('Shoulder')>-1||f.locs.indexOf('Mid / upper back')>-1))return{p:'T7',m:null};
+  if(sc.B>=7)return{p:'T6',m:null};
+  var map={A:'T1',B:'T6',C:'T3',D:'T4',E:'T2',F:'T5'};
+  var ks=['A','B','C','D','E','F'];ks.sort(function(a,b){return sc[b]-sc[a];});
+  var p=sc[ks[0]]>=4?(map[ks[0]]||'T4'):'T4';
+  var m=sc[ks[1]]>=4&&ks[1]!==ks[0]?map[ks[1]]:null;
+  return{p:p,m:m};
+}
+function mapTraining(t){if(t.indexOf('Currently')>-1)return'currently';if(t.indexOf('Recently')>-1)return'recently';if(t.indexOf('6 months')>-1||t.indexOf('Not recently')>-1)return'not_recently';if(t.indexOf('Never')>-1)return'never';return'currently';}
+function mapJump(j){return j.indexOf('No')>-1?'no':'yes';}
+function mapSquat(s){if(s.indexOf('No squatting')>-1)return'none';if(s.indexOf('Barbell')>-1)return'barbell';if(s.indexOf('Split')>-1)return'split';return'goblet';}
+function mapHinge(h){if(h.indexOf('No heavy')>-1)return'none';if(h.indexOf('Trap')>-1)return'trap';if(h.indexOf('Barbell')>-1)return'barbell';return'db';}
+function mapPull(p){if(p.indexOf('Pull-up')>-1||p.indexOf('Pull-ups')>-1)return'pullup';if(p.indexOf('Dumbbell')>-1)return'db';if(p.indexOf('Machine')>-1)return'machine';return'cable';}
+
+function startFresh(){AD=null;PREF_STYLE=null;PREF_EQUIP=null;document.querySelectorAll('.q-sec').forEach(function(s){s.className='q-sec';});document.getElementById('qs1').className='q-sec vis';updProg(1);go('questionnaire');}
+
+function submitQ(){
+  var f={name:document.getElementById('qname').value.trim()||'Member',age:parseInt(document.getElementById('qage').value)||38,hcp:document.getElementById('qhcp').value||'mid',pain:gPick('qpain'),locs:gChips('qlocs'),surg:gPick('qsurg'),mob:gPick('qmob'),hip:gPick('qhip'),thor:gPick('qthor'),training:gPick('qtraining'),ex:gPick('qex'),energy:gPick('qenergy'),trav:gPick('qtrav'),goal:gPick('qgoal'),jump:gPick('qjump'),squat:gPick('qsquat'),hinge:gPick('qhinge'),pull:gPick('qpull'),limit:document.getElementById('qlimit').value,success:document.getElementById('qsuccess').value};
+  var sc=scoreAll(f);var ag=assignTier(sc,f);
+  AD={meta:{name:f.name,age:f.age,hcp:f.hcp,date:new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})},scores:sc,tier:ag.p,mod:ag.m,sc:f,sessionCount:0,prefs:{training:mapTraining(f.training),jump:mapJump(f.jump),squat:mapSquat(f.squat),hinge:mapHinge(f.hinge),pull:mapPull(f.pull),style:PREF_STYLE||'coach',equip:PREF_EQUIP||'free'}};
+  saveProfile(AD);renderResults();go('results');
+}
+
+// ============================================================
+// RESULTS RENDER
+// ============================================================
+function fmtHcp(h){return{scratch:'Scratch–5','Scratch to 5':'Scratch–5',mid:'6–15','6 to 15':'6–15',high:'16–25','16 to 25':'16–25',casual:'Casual','Casual player':'Casual'}[h]||h||'–';}
+
+function renderResults(){
+  var d=AD,pt=TIERS[d.tier];if(!pt)pt=TIERS['T4'];
+  var mt=d.mod?TIERS[d.mod]:null;
+  document.getElementById('rname').textContent=d.meta.name;
+  document.getElementById('rmeta').textContent='Age '+d.meta.age+' · Handicap '+fmtHcp(d.meta.hcp)+' · '+d.meta.date;
+  document.getElementById('rtier').innerHTML='<div class="tier-badge"><div class="tb-dot" style="background:'+pt.col+'">'+pt.num+'</div><span class="tb-text">Track '+pt.num+' — '+pt.name+'</span></div>';
+  var sc=d.scores,doms=[{k:'A',l:'Mobility',s:sc.A},{k:'B',l:'Pain',s:sc.B},{k:'C',l:'Strength',s:sc.C},{k:'D',l:'Performance',s:sc.D},{k:'E',l:'Recovery',s:sc.E},{k:'F',l:'Travel',s:sc.F}];
+  var dH=doms.map(function(dm){
+    var c=dm.s>=7?pt.col:dm.s>=4?'var(--orange)':'var(--muted)';
+    return '<div class="domain-card"><div class="dc-top"><div class="dc-label">'+dm.l+'</div><div style="font-size:20px;font-weight:800;color:'+c+';font-family:var(--font-head)">'+dm.s+'<span style="font-size:11px;color:var(--muted)">/10</span></div></div><div class="dc-bar"><div class="dc-fill" style="width:'+dm.s*10+'%;background:'+c+'"></div></div></div>';
+  }).join('');
+
+  var sessCount=d.sessionCount||0;
+  var phase=getPhase(sessCount+1);
+  var phaseData=PHASES[phase];
+  var lH=pt.limits.map(function(l,i){return '<div class="lim-item"><div class="lim-num">'+(i+1)+'</div><div><div class="lim-title">'+l.a+'</div><div class="lim-body">'+l.b+'</div></div></div>';}).join('');
+  var sH=pt.summary.map(function(p){return '<p>'+p+'</p>';}).join('');
+  var mB=mt?'<div class="modifier-badge">+ Modifier: '+mt.name+' activates Phase 2</div>':'';
+  var prefs=d.prefs;
+  var prefLabels={currently:'Currently training',recently:'Recently returned',not_recently:'Not recently',never:'Never trained',yes:'Jump-approved',no:'No jumping',goblet:'Goblet squat',split:'Split squat / lunge',barbell:'Barbell squat',none:'No squatting',trap:'Trap bar deadlift',db:'DB / KB RDL',pullup:'Pull-ups',cable:'Cable rows',machine:'Machine rows',straight:'One at a time',superset:'Supersets / pairs',circuit:'Circuits',coach:'Coach choice',free:'Free weights first',kb:'Kettlebells first'};
+  var prefHtml=prefs?'<div class="pref-summary"><div class="ps-title">Exercise Preferences</div><div class="ps-grid"><div class="ps-item">Training: <span>'+(prefLabels[prefs.training]||prefs.training)+'</span></div><div class="ps-item">Impact: <span>'+(prefs.jump==='no'?'No jumping':'Jump-approved')+'</span></div><div class="ps-item">Squat: <span>'+(prefLabels[prefs.squat]||prefs.squat)+'</span></div><div class="ps-item">Hinge: <span>'+(prefLabels[prefs.hinge]||prefs.hinge)+'</span></div><div class="ps-item">Pull: <span>'+(prefLabels[prefs.pull]||prefs.pull)+'</span></div><div class="ps-item">Style: <span>'+(prefLabels[prefs.style]||prefs.style)+'</span></div></div></div>':'';
+  var wuHtml=renderWU(d.tier);
+
+  document.getElementById('rbody').innerHTML=
+    '<div class="r-sec"><div class="r-sec-title">Domain Scores</div><div class="domain-grid">'+dH+'</div></div>'+
+    '<div class="r-sec"><div class="r-sec-title">Current Phase</div><div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;"><div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;"><span class="pill pill-teal">'+phaseData.name+'</span><span style="font-size:11px;color:var(--muted)">'+phaseData.sub+'</span></div><p style="font-size:13px;color:var(--muted);line-height:1.65;margin-bottom:8px;">'+phaseData.desc+'</p><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:10px;">'+['Foundation','Development','Intensification','Peak'].map(function(n,i){var active=n.toLowerCase()===phase;return '<div style="padding:6px;text-align:center;background:'+(active?'var(--teal-dim)':'var(--bg3)')+';border:1px solid '+(active?'rgba(0,199,180,0.3)':'var(--border)')+';border-radius:5px;font-size:9px;font-weight:700;color:'+(active?'var(--teal)':'var(--muted)')+';letter-spacing:0.05em;">'+n+'</div>';}).join('')+'</div></div></div>'+
+    '<div class="r-sec"><div class="r-sec-title">Your Program Track</div><div class="track-card"><div class="track-head" style="background:'+pt.col+'22;"><div class="track-num" style="color:'+pt.col+'">'+pt.num+'</div><div class="track-info"><h3>'+pt.name+'</h3><div class="track-why">'+pt.why+'</div></div></div><div class="track-body">'+sH+'</div></div>'+mB+'</div>'+
+    '<div class="r-sec"><div class="r-sec-title">Key Limitations</div><div class="lim-list">'+lH+'</div></div>'+
+    (prefs?'<div class="r-sec"><div class="r-sec-title">Your Preferences</div>'+prefHtml+'</div>':'')+
+    '<div class="r-sec"><div class="r-sec-title">Your Warm-Up Protocol</div>'+wuHtml+'</div>'+
+    '<div class="r-sec"><div class="next-cta"><div class="next-cta-eye">FitCortex Session Generator</div><div class="next-cta-title">Ready to train?</div><div class="next-cta-sub">Your sessions are built around your exact profile, phase, and readiness — every time.</div><div class="cta-actions"><button class="btn-cta-main" onclick="goToCheckin()">Generate My Session</button>'+(AD&&AD._demo?'<button class="btn-cta-secondary" onclick="showDemoSession()">See Sample Session</button>':'')+' <button class="btn-cta-coach" onclick="go(\'pin\')">Coach and Administrator Access</button></div></div></div>';
+}
+
+function renderWU(tk){
+  var t=TIERS[tk];if(!t||!t.wu)return'';
+  var wu=t.wu.filter(function(s){
+    if(s.n.indexOf('Box Jumps')>-1||s.n.indexOf('Pogo Hops')>-1){return!(AD&&AD.prefs&&AD.prefs.jump==='no');}
+    return true;
+  });
+  var steps=wu.map(function(s,i){return '<div class="wu-step"><div class="wu-num">'+(i+1)+'</div><div><div class="wu-name">'+s.n+'</div><div class="wu-note-txt">'+s.note+'</div>'+(s.nn?'<div class="wu-nn">Non-Negotiable</div>':'')+'</div></div>';}).join('');
+  return '<div class="wu-card"><div class="wu-head"><span class="wu-badge">YOUR WARM-UP</span><span class="wu-title-txt">Personalized Pre-Session Protocol</span></div><div class="wu-body"><div class="wu-quote">"We are not training — we are preparing to perform."</div><div class="wu-steps">'+steps+'</div></div></div>';
+}
+
+// ============================================================
+// CHECK-IN SETUP
+// ============================================================
+function goToCheckin(){
+  if(!AD)return;
+  var pt=TIERS[AD.tier];
+  var ini=AD.meta.name.split(' ').map(function(w){return w[0];}).join('').substring(0,2).toUpperCase();
+  document.getElementById('ci-profile').innerHTML='<div class="cp-avatar" style="background:'+pt.col+';color:#0A0A0C">'+ini+'</div><div><div class="cp-name">'+AD.meta.name+'</div><div class="cp-track">Track '+pt.num+' — '+pt.name+(AD.prefs&&AD.prefs.jump==='no'?' · No Impact':'')+'</div></div>';
+  CI_RS=7;CI_TA=30;CI_EQUIP=['barbell','dumbbell','cable','machine','cardio','bodyweight'];CI_FOCUS=['golf'];CI_PAIN=[];CI_EX_COUNT=5;CI_REST=60;CI_OVERRIDE=false;
+  document.getElementById('ci-range').value=7;
+  document.getElementById('ci-score-disp').innerHTML='7<span>/10</span>';
+  document.getElementById('ci-score-disp').style.color='var(--teal)';
+  document.querySelectorAll('.tbtn').forEach(function(b){b.className='tbtn';});document.querySelectorAll('.tbtn')[1].className='tbtn on';
+  ['eq-barbell','eq-dumbbell','eq-cable','eq-machine','eq-cardio','eq-bodyweight'].forEach(function(id){var el=document.getElementById(id);if(el)el.className='equip-card sel';});
+  ['eq-bands','eq-kettlebell','eq-medball','eq-fullgym'].forEach(function(id){var el=document.getElementById(id);if(el)el.className='equip-card';});
+  document.querySelectorAll('.focus-card').forEach(function(c){c.className='focus-card';});document.getElementById('fc-golf').className='focus-card sel';
+  document.querySelectorAll('.pain-chip').forEach(function(c){c.classList.remove('sel');});
+  document.getElementById('pain-info').classList.remove('vis');
+  go('checkin');
+}
+
+// ============================================================
+// PROFILES
+// ============================================================
+function renderProfiles(){
+  var ps=getAllProfiles(),list=document.getElementById('profile-list');
+  if(!ps.length){list.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">No profiles yet. Create one below.</div>';return;}
+  list.innerHTML=ps.map(function(p,i){
+    var pt=TIERS[p.tier],col=pt?pt.col:'var(--teal)';
+    var tn=pt?'Track '+pt.num+' — '+pt.name:'Unassigned';
+    var ini=p.meta.name.split(' ').map(function(w){return w[0];}).join('').substring(0,2).toUpperCase();
+    var sessInfo=p.sessionCount?'Session '+(p.sessionCount+1)+' · '+PHASES[getPhase((p.sessionCount||0)+1)].name:'Ready to start';
+    return '<div class="profile-item" onclick="selectProfile('+i+')"><div class="pi-avatar" style="background:'+col+'">'+ini+'</div><div><div class="pi-name">'+p.meta.name+'</div><div class="pi-track">'+tn+'</div><div class="pi-meta">'+sessInfo+'</div></div><div class="pi-arrow">→</div></div>';
+  }).join('');
+}
+function selectProfile(i){var ps=getAllProfiles();AD=ps[i];renderResults();go('results');}
+function loadSample(k){AD=SAMPLES[k];AD._demo=true;renderResults();go('results');}
+function showDemoSession(){
+  if(!AD)return;
+  var k='marcus';
+  if(AD.meta.name.indexOf('James')>-1)k='james';
+  if(AD.meta.name.indexOf('Alex')>-1)k='alex';
+  var demoFocus={marcus:['golf','strength'],james:['golf'],alex:['recovery','golf']};
+  CI_FOCUS=demoFocus[k]||['golf'];CI_TA=45;CI_RS=8;
+  CI_EQUIP=['dumbbell','cable','machine','bodyweight'];
+  if(k==='marcus')CI_EQUIP=['barbell','dumbbell','cable','machine','cardio','bodyweight'];
+  if(k==='james')CI_EQUIP=['dumbbell','bands','bodyweight'];
+  CI_PAIN=[];CI_EX_COUNT=5;CI_REST=60;CI_OVERRIDE=false;
+  generateSession();
+}
+
+// ============================================================
+// DISCLAIMER
+// ============================================================
+function startQuestionnaire(){if(AD&&AD._discAccepted){go('questionnaire');}else{go('disclaimer');}}
+function discToggle(){var cb=document.getElementById('disc-cb');var btn=document.getElementById('btn-disc-go');btn.className=cb.checked?'btn-disc active':'btn-disc';}
+function discAccept(){var cb=document.getElementById('disc-cb');if(!cb.checked)return;var d=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});document.getElementById('disc-date').textContent='Accepted '+d;if(AD){AD._discAccepted=d;saveProfile(AD);}go('questionnaire');}
+
+// ============================================================
+// PIN / COACH
+// ============================================================
+function chkPin(){var pin=document.getElementById('pin-inp').value;if(pin==='1234'){document.getElementById('pin-inp').value='';document.getElementById('pin-err').style.display='none';renderCoach();go('coach');}else{document.getElementById('pin-err').style.display='block';}}
+document.getElementById('pin-inp').addEventListener('keyup',function(e){if(e.key==='Enter')chkPin();});
+
+function renderCoach(){
+  document.getElementById('coach-date').textContent='Joe Lego Performance — '+new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})+' — Internal Use Only';
+  var real=getAllProfiles();
+  var demos=[{k:'marcus',l:'Marcus D.'},{k:'james',l:'James R.'},{k:'alex',l:'Alex T.'}];
+  if(!CC){CC=real.length?'r0':'marcus';}
+  var tabs=real.map(function(p,i){var on=CC===('r'+i);return '<button class="ctab'+(on?' on':'')+'" onclick="swCoach(\'r'+i+'\',this)">'+p.meta.name+'<span class="member-badge">Member</span></button>';}).join('');
+  tabs+=demos.map(function(d){var on=CC===d.k;return '<button class="ctab'+(on?' on':'')+'" onclick="swCoach(\''+d.k+'\',this)">'+d.l+'<span class="demo-badge">Demo</span></button>';}).join('');
+  document.getElementById('coach-tabs').innerHTML=tabs||'<div style="font-size:12px;color:var(--muted);padding:16px 20px;">No member profiles yet.</div>';
+  renderCoachData(CC);
+}
+function swCoach(key,btn){CC=key;document.querySelectorAll('.ctab').forEach(function(b){b.className='ctab';});btn.className='ctab on';renderCoachData(key);}
+
+function renderCoachData(key){
+  var d=null,isReal=false;
+  if(key.indexOf('r')===0&&key.length>1){var i=parseInt(key.substring(1));var ps=getAllProfiles();d=ps[i];isReal=true;}
+  else{d=SAMPLES[key];}
+  if(!d){document.getElementById('coach-body').innerHTML='<div style="padding:28px;text-align:center;color:var(--muted);font-size:13px;">Profile not found.</div>';return;}
+  var pt=TIERS[d.tier];if(!pt)return;
+  var mt=d.mod?TIERS[d.mod]:null,sc=d.scores;
+  var dc=[{l:'A-Mob',s:sc.A},{l:'B-Pain',s:sc.B},{l:'C-Str',s:sc.C},{l:'D-Perf',s:sc.D},{l:'E-Rec',s:sc.E},{l:'F-Trav',s:sc.F}];
+  var scH=dc.map(function(x){var c=x.s>=7?pt.col:x.s>=4?'var(--orange)':'var(--muted)';return '<div class="sc-cell"><div class="sc-lbl">'+x.l+'</div><div class="sc-num" style="color:'+c+'">'+x.s+'</div></div>';}).join('');
+  var prefs=d.prefs;
+  var sessCount=d.sessionCount||0;
+  var phase=getPhase(sessCount+1);
+  var phaseData=PHASES[phase];
+  var itp=[
+    ['Client',d.meta.name+' — Age '+d.meta.age+' — Handicap '+fmtHcp(d.meta.hcp)],
+    ['Facility','Joe Lego Performance'],
+    ['Type',isReal?'Member':'Demo Profile'],
+    ['Date',d.meta.date||'–'],
+    ['Terms Accepted',d._discAccepted||'Not yet'],
+    ['Tier','Track '+pt.num+' — '+pt.name],
+    ['Modifier',mt?mt.name:'None'],
+    ['Phase',phaseData.name+' ('+phaseData.sub+')'],
+    ['Session Count',sessCount+' completed — Next: Session '+(sessCount+1)],
+    ['Override',sc.B>=7?'YES — Pain override':'No'],
+    ['Pain',d.sc&&d.sc.pain?(d.sc.pain+(d.sc.locs&&d.sc.locs.length?' — '+d.sc.locs.join(', '):'')):'–'],
+    ['Surgery',d.sc&&(d.sc.surg==='no'||d.sc.surg==='No')?'None':d.sc&&d.sc.surg?'Yes':'–'],
+    ['Training',prefs?(prefs.training.charAt(0).toUpperCase()+prefs.training.slice(1)):'–'],
+    ['Jump Approved',prefs?(prefs.jump==='no'?'NO — Low impact only':'Yes'):'–'],
+    ['Squat Pref',prefs?prefs.squat:'–'],
+    ['Hinge Pref',prefs?prefs.hinge:'–'],
+    ['Pull Pref',prefs?prefs.pull:'–'],
+    ['Limitation',d.sc&&d.sc.limit?d.sc.limit:'Not provided'],
+    ['Success Goal',d.sc&&d.sc.success?d.sc.success:'Not provided'],
+    ['Coach Note',pt.interp]
+  ];
+  var itH=itp.map(function(r){return '<tr><td class="i-field">'+r[0]+'</td><td class="i-val">'+r[1]+'</td></tr>';}).join('');
+  var fgH=pt.flags.map(function(f){return '<div class="flag '+f.c+'"><div class="flag-hd"><span class="flag-lv">'+f.lv+'</span><span class="flag-ti">'+f.ti+'</span></div><div class="flag-bd">'+f.bd+'</div></div>';}).join('');
+  var prH=pt.prios.map(function(p){return '<div class="prio-row"><div class="prio-ph">'+p.ph+'</div><div class="prio-r"><div class="prio-t">'+p.ti+'</div><div class="prio-i">'+p.it+'</div></div></div>';}).join('');
+  var agH=pt.agenda.map(function(a){return '<div class="ag-row"><div class="ag-t">'+a.t+'</div><div class="ag-i">'+a.i+'</div><div class="ag-n">'+a.n+'</div></div>';}).join('');
+
+  // Full history for coach
+  var hist=getSessionHistory(d.meta.name);
+  var histHtml='';
+  if(hist.length>0){
+    histHtml=hist.map(function(h){return '<div class="hist-item"><div><div class="hist-date">'+h.date+'</div><div class="hist-name">'+h.name+'</div></div><div class="hist-cycle">Sess '+h.sessNum+' · '+h.phase+' · RS '+h.readiness+'/10</div></div>';}).join('');
+  }else{histHtml='<div style="font-size:12px;color:var(--muted);">No sessions recorded yet.</div>';}
+
+  // Monthly report
+  var mr=getMonthlyReport();
+  var thisMonth=new Date().getMonth();
+  var mrDisplay=mr&&mr.month===thisMonth?mr:{sessions:0};
+  var mrHtml='<div class="monthly-report"><div class="mr-grid"><div class="mr-stat"><div class="mr-num">'+mrDisplay.sessions+'</div><div class="mr-lbl">Sessions This Month</div></div><div class="mr-stat"><div class="mr-num">'+(sessCount)+'</div><div class="mr-lbl">Total Sessions</div></div><div class="mr-stat"><div class="mr-num">'+phaseData.name.substring(0,4)+'</div><div class="mr-lbl">Current Phase</div></div></div><button class="btn-clear-report" onclick="if(confirm(\'Clear monthly report?\'))clearMonthlyReport()">Clear Monthly Report</button></div>';
+
+  var delB=isReal?'<button class="del-btn" onclick="confirmDel(\''+d.meta.name+'\')">Remove Member Profile</button>':'';
+  document.getElementById('coach-body').innerHTML=
+    '<div class="c-sec"><div class="c-sec-title">Screening Interpretation</div><div class="score-row">'+scH+'</div><table class="i-table"><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody>'+itH+'</tbody></table>'+delB+'</div>'+
+    '<div class="c-sec"><div class="c-sec-title">Flags and Cautions</div><div class="flags">'+fgH+'</div></div>'+
+    '<div class="c-sec"><div class="c-sec-title">Programming Priorities</div><div class="prios">'+prH+'</div></div>'+
+    '<div class="c-sec"><div class="c-sec-title">Session 1 Agenda</div><div class="agenda">'+agH+'</div></div>'+
+    '<div class="c-sec"><div class="c-sec-title">Session History (Full)</div><div class="history-full">'+histHtml+'</div></div>'+
+    '<div class="c-sec"><div class="c-sec-title">Monthly Report</div>'+mrHtml+'</div>'+
+    '<div class="c-sec"><div class="c-sec-title">Movement Screen — Session 1 Notes</div><div class="fill-in"><div class="fi-title">Record findings below</div><div class="fi-g"><div class="fi-row"><label>Lumbar provocative direction</label><input type="text" placeholder="Flexion / Extension / Rotation"></div><div class="fi-row"><label>Hip IR Right / Left / Asymmetry</label><input type="text" placeholder="e.g. 38 / 28 / 10 degrees"></div><div class="fi-row"><label>T-spine rotation R / L</label><input type="text" placeholder="e.g. 40 / 35 degrees"></div><div class="fi-row"><label>Pain at session start 0–10</label><input type="text" placeholder="e.g. 3/10 low back dull"></div><div class="fi-row"><label>Program adjustments</label><textarea placeholder="Changes to Phase 1 based on screen findings…"></textarea></div><div class="fi-row"><label>Referral needed</label><input type="text" placeholder="Yes or No"></div></div></div></div>';
+}
+function confirmDel(name){if(confirm('Remove '+name+' from this device? This cannot be undone.')){deleteProfile(name);CC=null;renderCoach();}}
+
+// INIT
+go('welcome');
+</script>
+</body>
+</html>
